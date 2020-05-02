@@ -5,11 +5,6 @@
 #include <climits>
 #include <string>
 
-using std::cout;
-using std::cin;
-using std::exception;
-using std::string;
-
 class MainMenu {
 public:
     MainMenu();

@@ -10,7 +10,7 @@ int main() {
     try {
         menu.displayMenu();
     }
-    catch(exception& e) {
+    catch(...) {
         menu.~MainMenu();
     }
 

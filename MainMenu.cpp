@@ -1,4 +1,10 @@
 #include "MainMenu.h"
+#include "Player.h"
+
+using std::cout;
+using std::cin;
+using std::exception;
+using std::string;
 
 MainMenu::MainMenu() {
     
@@ -13,7 +19,7 @@ void MainMenu::displayMenu() {
     << "1. New Game" << '\n'
     << "2. Load Game" << '\n'
     << "3. Credits (Show student information)" << '\n'
-    << "4. Quit" << '\n';
+    << "4. Quit" << '\n' << '>';
 
     int userInput;
 
