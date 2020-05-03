@@ -1,7 +1,7 @@
 #include "GameBoard.h"
 #include <random>
 
-GameBoard::GameBoard() {
+GameBoard::GameBoard(std::string playerOneName, std::string playerTwoName) {
     
     // Fill the tile bag
     initialiseTileBag();
@@ -19,7 +19,8 @@ GameBoard::GameBoard() {
     }
 
     // Initialise player mosaics
-    
+    playerOne = new Player(playerOneName);
+    playerTwo = new Player(playerTwoName);
 }
 
 GameBoard::~GameBoard() {

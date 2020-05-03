@@ -2,12 +2,13 @@
 #define GAMEBOARD
 
 #include "LinkedList.h"
+#include "Player.h"
 #include <vector>
 
 class GameBoard {
 
 public:
-    GameBoard();
+    GameBoard(std::string playerOneName, std::string playerTwoName);
     ~GameBoard();
 
     // Getter
@@ -25,6 +26,8 @@ private:
     LinkedList boxLid;
 
     // Players
+    Player* playerOne;
+    Player* playerTwo;
 
     // Initialise tile bag with a randomize set of tiles
     void initialiseTileBag();
