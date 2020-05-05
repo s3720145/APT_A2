@@ -1,0 +1,11 @@
+1
+PlayerA
+PlayerB
+turn 2 Y 2
+turn 5 Y 1
+save savefile.txt
+turn 4 U 5
+turn 0 B 2 
+save savefile.txt
+
+

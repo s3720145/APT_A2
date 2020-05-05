@@ -1,0 +1,109 @@
+Menu
+----
+1. New Game
+2. Load Game
+3. Credits (Show student information)
+4. Quit
+
+> 1
+
+Starting a New Game
+
+Enter a name for player 1
+> PlayerA
+
+Enter a name for player 2
+> PlayerB
+
+Start Round
+
+Turn: PlayerA
+Factories:
+0: F
+1: R Y Y U
+2: R B B B
+3: B L L L
+4: R R U U
+5: R Y B L
+
+Mosaic for PlayerA:
+1:         . || . . . . .
+2:       . . || . . . . .
+3:     . . . || . . . . .
+4:   . . . . || . . . . .
+5: . . . . . || . . . . .
+broken:
+turn 2 B 3
+
+Turn End
+
+Turn: PlayerB
+Factories:
+0: F R
+1: R Y Y U
+2: 
+3: B L L L
+4: R R U U
+5: R Y B L
+
+Mosaic for PlayerB:
+1:         . || . . . . .
+2:       . . || . . . . .
+3:     . . . || . . . . .
+4:   . . . . || . . . . .
+5: . . . . . || . . . . .
+broken:
+turn 1 Y 2
+Turn End
+
+End Round
+
+Start Next Round
+> save savefile.txt
+Game successfully saved to ’savefile.txt’
+
+
+Turn: PlayerA
+Factories:
+0: F R R U
+1: 
+2: 
+3: B L L L
+4: R R U U
+5: R Y B L
+
+Mosaic for PlayerA:
+1:         . || . . . . .
+2:       . . || . . . . .
+3:     . . . || . . . . .
+4:   . . . . || . . . . .
+5: . . . . . || . . . . .
+broken:
+turn 4 U 2
+
+Turn End
+
+Turn: PlayerB
+Factories:
+0: F R R U R R
+1: R Y Y U
+2: 
+3: B L L L
+4: 
+5: R Y B L
+
+Mosaic for PlayerB:
+1:         . || . . . . .
+2:       . . || . . . . .
+3:     . . . || . . . . .
+4:   . . . . || . . . . .
+5: . . . . . || . . . . .
+broken:
+turn 0 B 2 
+Turn End
+
+End Round
+
+Start Next Round
+> save savefile.txt
+Game successfully saved to ’savefile.txt’
