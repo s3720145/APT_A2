@@ -1,5 +1,6 @@
 #include "MainMenu.h"
 #include "Player.h"
+#include "LinkedList.h"
 
 using std::cout;
 using std::cin;
@@ -19,7 +20,22 @@ void MainMenu::displayMenu() {
     << "1. New Game" << '\n'
     << "2. Load Game" << '\n'
     << "3. Credits (Show student information)" << '\n'
-    << "4. Quit" << '\n' << '>';
+    << "4. Quit" << '\n' << "> " << '\n';
+
+    //debug
+    LinkedList* LL = new LinkedList();
+
+    Player* player = new Player("ivan");
+    player->insertIntoStorage(1, Tile::Black);
+    player->insertIntoStorage(2, Tile::Black);
+    player->insertIntoStorage(2, Tile::LightBlue);
+    player->insertIntoStorage(2, Tile::Black);
+    player->insertIntoStorage(3, Tile::LightBlue);
+    player->insertIntoStorage(3, Tile::LightBlue);
+    player->insertIntoStorage(3, Tile::LightBlue);
+    player->printPlayerBoard();
+    player->clearStorageRows(*LL);
+    player->printPlayerBoard();
 
     int userInput;
 

@@ -2,13 +2,31 @@
 #include "LinkedList.h"
 #include <iostream>
 
+using std::cout;
+
 Player::Player(string playerName) {
     this->playerName = playerName;
+    initialiseStructures();
+}
 
+Player::Player(const Player& other) {
+    // TODO
+}
+
+
+Player::Player(Player&& other) {
+    // TODO
+}
+
+Player::~Player() {
+    // TODO
+}
+
+void Player::initialiseStructures() {
     // Initialises the storage rows to Tile::NoTile
-    for(int row = 0; row < ARRAY_DIM; ++row) {
-        for(int column = 0; column <= row; ++column) {
-            storage[row][column] = Tile::NoTile;
+    for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
+        for(int col_num = 0; col_num <= row_num; ++col_num) {
+            storage[row_num][col_num] = Tile::NoTile;
         }
     }
 
@@ -17,33 +35,21 @@ Player::Player(string playerName) {
         Tile::Black, Tile::LightBlue};
 
     // Populates the mosaic using lowercase char representations of the enums
-    for(int row = 0; row < ARRAY_DIM; ++row) {
-        for(int column = 0; column < ARRAY_DIM; ++column) {
-            mosaic[row][column] = tolower(getTileColourAsString(colourArray[column]));
+    for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
+        for(int col_num = 0; col_num < ARRAY_DIM; ++col_num) {
+            mosaic[row_num][col_num] = tolower(getTileColourAsString(colourArray[col_num]));
         }
 
         // After a row is filled the elements in the colourArray are shifted by one
         Tile::Colour temp = colourArray[ARRAY_DIM - 1];
-        for(int index = ARRAY_DIM - 1; index >= 0; --index) {
-            colourArray[index + 1] = colourArray[index];
+        for(int i = ARRAY_DIM - 1; i >= 0; --i) {
+            colourArray[i + 1] = colourArray[i];
         }
         colourArray[0] = temp;
     }
-
-    // DEBUG
-    // for(int row = 0; row < ARRAY_DIM; ++row) {
-    //     for(int column = 0; column < ARRAY_DIM; ++column) {
-    //         std::cout << mosaic[row][column];
-    //     }
-    //     std::cout << std::endl;
-    // }
 }
 
-Player::~Player() {
-    //TODO
-}
-
-string Player::getPlayerName() {
+string Player::getPlayerName() const {
     return playerName;
 }
 
@@ -57,49 +63,73 @@ char& Player::getMosaic() {
     return mosaicRef;
 }
 
-void Player::InsertIntoMosaic(int row, Tile::Colour tile) {
-    for(int index = 0; index < ARRAY_DIM; ++index) {
-        if(tolower(getTileColourAsString(tile)) == mosaic[row][index]) {
-            // check if there is a way to uppercase chars TODO
-            mosaic[row][index] = getTileColourAsString(tile);
+void Player::printPlayerBoard() const {
+    for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
+        cout << row_num + 1 << ':';
+        // Prints the storage rows
+        for(int col_num = 1; col_num < ARRAY_DIM - row_num ; ++col_num) {
+            cout << ' ';
+        }
+        for(int col_num = row_num; col_num >= 0; --col_num) {
+            cout << getTileColourAsString(storage[row_num][col_num]);
+        }
+
+        // Prints the mosaic
+        cout << "||";
+        for(int col_num = 0; col_num < ARRAY_DIM; ++col_num) {
+            std::cout << mosaic[row_num][col_num];
+        }
+        cout << std::endl;
+    }
+}
+
+void Player::InsertIntoMosaic(const int row_num, const Tile::Colour tile) {
+    for(int i = 0; i < ARRAY_DIM; ++i) {
+        if(tolower(getTileColourAsString(tile)) == mosaic[row_num][i]) {
+            mosaic[row_num][i] = toupper(mosaic[row_num][i]);
         }
     }
 }
 
-bool Player::insertIntoStorage(int rowNumber, Tile::Colour tile) {
-    // breakLoop stops the for loop from continuing if insertion is successful
+bool Player::insertIntoStorage(int row_num, const Tile::Colour tile) {
     bool insertSuccess = false;
-    bool breakLoop = false;
 
-    // The loop will not run if the contract is not upheld
-    if(rowNumber >= 1 && rowNumber <= 5) {
-        // Iterate through the row and find a free spot. IF the row is full or there 
-        // is another tile with non-matching colours, break loop
-        for(int column = 0; column < rowNumber && breakLoop == false; ++column) {
-            if(getTileColourAsString(storage[rowNumber - 1][column]) == '.') {
-                storage[rowNumber - 1][column] = tile;
+    if(row_num >= 1 && row_num <= 5) {
+        // breakLoop stops the for loop from continuing if insertion is successful
+        bool breakLoop = false;
+
+        /**
+         * Iterate through the row and find a free spot. IF the row is full or there 
+         * is another tile with non-matching colours, break loop
+         */
+        for(int col_num = 0; col_num < row_num && breakLoop == false; ++col_num) {
+            if(getTileColourAsString(storage[row_num - 1][col_num]) == '.') {
+                storage[row_num - 1][col_num] = std::move(tile);
                 insertSuccess = true;
                 breakLoop = true;
-            } else if(getTileColourAsString(tile) != getTileColourAsString(storage[rowNumber - 1][column])) {
+            } else if(getTileColourAsString(tile) != getTileColourAsString(storage[row_num - 1][col_num])) {
                 breakLoop = true;
             }
         }
     }
 
-    return insertSuccess;
+    return std::move(insertSuccess);
 }
 
 void Player::clearStorageRows(LinkedList& boxLid) {
-    for(int row = 0; row < ARRAY_DIM; ++row) {
-        // Checks if row is full. If row is full, take the last element and
-        // insert into mosaic. Discard the rest into the box lid
-        if(getTileColourAsString(storage[row][row]) != '.') {
-            InsertIntoMosaic(row, storage[row][row]);
-            storage[row][row] = Tile::NoTile;
+    // Checks all 5 rows in storage
+    for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
+        /**
+         * Checks if row is full. If row is full, take the last element and
+         * insert into mosaic. Discard the rest into the box lid
+         */
+        if(getTileColourAsString(storage[row_num][row_num]) != '.') {
+            InsertIntoMosaic(row_num, storage[row_num][row_num]);
+            storage[row_num][row_num] = Tile::NoTile;
 
-            for(int column = 0; column <= row - 1; ++column) {
-                boxLid.addBack(storage[row][column]);
-                storage[row][column] = Tile::NoTile;
+            for(int col_num = 0; col_num <= row_num - 1; ++col_num) {
+                boxLid.addBack(storage[row_num][col_num]);
+                storage[row_num][col_num] = Tile::NoTile;
             }
         }
     }

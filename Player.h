@@ -13,19 +13,32 @@ class LinkedList;
 class Player {
 public:
     Player(string playerName);
+    // COPY constructor
+    Player(const Player& other);
+    // MOVE constructor
+    Player(Player&& other);
     ~Player();
 
-    // Returns playerName
-    string getPlayerName();
+    /**
+     * Initialises the mosaic and storage ADTs. Only initialised
+     * once which is when the constructor is called.
+     */
+    void initialiseStructures();
 
-    // Returns storage rows
+    // Returns playerName.
+    string getPlayerName() const;
+
+    // Returns a reference of the storage rows.
     Tile::Colour& getStorage();
 
-    // Returns the mosaic
+    // Returns a reference of the mosaic.
     char& getMosaic();
 
-    // Inserts a tile into the mosaic
-    void InsertIntoMosaic(int row, Tile::Colour tile);
+    // Prints the player's mosaic and storage rows.
+    void printPlayerBoard() const;
+
+    // Inserts a tile into the mosaic.
+    void InsertIntoMosaic(const int row, const Tile::Colour tile);
 
     /**
      * Inserts a tile into a storage row. user specifies the storage row the 
@@ -40,10 +53,10 @@ public:
      * 
      * rowNumber MUST be >= 1 and <= 5
      */
-    bool insertIntoStorage(int rowNumber, Tile::Colour tile);
+    bool insertIntoStorage(const int row_num, const Tile::Colour tile);
 
     /**
-     * Call at the end of a round. Checks all storage rows if they are full.
+     * Call at the end of each round for each player. Checks all storage rows if they are full.
      * If a storage row is full, add the last tile in the row to the mosaic
      * place the rest in the box lid. 
      */
@@ -52,8 +65,10 @@ public:
 private:
     string playerName;
 
+    // Storage rows on the left-hand side of the player's mosaic
     Tile::Colour storage[ARRAY_DIM][ARRAY_DIM];
 
+    // Player mosaic 
     char mosaic[ARRAY_DIM][ARRAY_DIM];
 };
 
