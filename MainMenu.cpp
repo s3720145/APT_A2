@@ -22,21 +22,6 @@ void MainMenu::displayMenu() {
     << "3. Credits (Show student information)" << '\n'
     << "4. Quit" << '\n' << "> " << '\n';
 
-    //debug
-    LinkedList* LL = new LinkedList();
-
-    Player* player = new Player("ivan");
-    player->insertIntoStorage(1, Tile::Black);
-    player->insertIntoStorage(2, Tile::Black);
-    player->insertIntoStorage(2, Tile::LightBlue);
-    player->insertIntoStorage(2, Tile::Black);
-    player->insertIntoStorage(3, Tile::LightBlue);
-    player->insertIntoStorage(3, Tile::LightBlue);
-    player->insertIntoStorage(3, Tile::LightBlue);
-    player->printPlayerBoard();
-    player->clearStorageRows(*LL);
-    player->printPlayerBoard();
-
     int userInput;
 
     while (!(cin >> userInput) || userInput < 1 || userInput > 4) {

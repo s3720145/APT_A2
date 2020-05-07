@@ -19,8 +19,8 @@ GameBoard::GameBoard(std::string playerOneName, std::string playerTwoName) {
     }
 
     // Initialise player mosaics
-    playerOne = new Player(playerOneName);
-    playerTwo = new Player(playerTwoName);
+    playerOne = new Player(playerOneName, 1);
+    playerTwo = new Player(playerTwoName, 2);
 }
 
 GameBoard::~GameBoard() {

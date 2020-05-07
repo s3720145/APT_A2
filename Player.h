@@ -4,7 +4,8 @@
 #include <string>
 #include "Tile.h"
 
-#define ARRAY_DIM  5
+#define ARRAY_DIM           5
+#define NUM_BROKEN_TILES    7
 
 using std::string;
 
@@ -12,7 +13,8 @@ class LinkedList;
 
 class Player {
 public:
-    Player(string playerName);
+    // DEFAULT costructor for a new game
+    Player(string playerName, int score);
     // COPY constructor
     Player(const Player& other);
     // MOVE constructor
@@ -28,8 +30,16 @@ public:
     // Returns playerName.
     string getPlayerName() const;
 
+    void setScore(const int score);
+
+    int getScore() const;
+
+    void setStorage(char* inputStr[]);
+
     // Returns a reference of the storage rows.
     Tile::Colour& getStorage();
+
+    void setMosaic(string inputMosaic);
 
     // Returns a reference of the mosaic.
     char& getMosaic();
@@ -62,14 +72,21 @@ public:
      */
     void clearStorageRows(LinkedList& boxLid);
 
+    bool insertIntoBrokenTiles(Tile::Colour tile);
+
 private:
     string playerName;
+
+    int score;
 
     // Storage rows on the left-hand side of the player's mosaic
     Tile::Colour storage[ARRAY_DIM][ARRAY_DIM];
 
     // Player mosaic 
     char mosaic[ARRAY_DIM][ARRAY_DIM];
+
+    // Player broken tiles
+    Tile::Colour brokenTiles[NUM_BROKEN_TILES];
 };
 
 #endif // PLAYER
