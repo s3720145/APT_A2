@@ -9,6 +9,7 @@ class GameBoard {
 
 public:
     GameBoard(std::string playerOneName, std::string playerTwoName);
+    GameBoard(std::vector<Tile::Colour> centreFactory);
     ~GameBoard();
 
     // Getter
@@ -16,6 +17,11 @@ public:
     Tile::Colour getFactoryTile(int row, int column);
     LinkedList getTileBag();
     LinkedList getBoxLid();
+
+    // Setter
+    void setFactoryTile(Tile::Colour tile, int row, int column);
+    void setTileBagElement(Tile::Colour tile);
+    void setBoxLidElement(Tile::Colour tile);
     
 private:
     /* data */
