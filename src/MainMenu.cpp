@@ -1,6 +1,7 @@
 #include "MainMenu.h"
 #include "Player.h"
 #include "LinkedList.h"
+#include "tests/playerUnitTests/PlayerTests.h"
 
 using std::cout;
 using std::cin;
@@ -8,7 +9,8 @@ using std::exception;
 using std::string;
 
 MainMenu::MainMenu() {
-    
+    PlayerTests* playerTests = new PlayerTests();
+    playerTests->~PlayerTests();
 }
 
 MainMenu::~MainMenu() {

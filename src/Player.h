@@ -2,6 +2,7 @@
 #define PLAYER
 
 #include <string>
+#include <array>
 #include "Tile.h"
 
 #define ARRAY_DIM           5
@@ -41,8 +42,8 @@ public:
 
     void setMosaic(string inputMosaic);
 
-    // Returns a reference of the mosaic.
-    char& getMosaic();
+    // Returns a pointer to a mosaic[row_num][col_num]
+    char* getMosaicTile(int row_num, int col_num);
 
     // Prints the player's mosaic and storage rows.
     void printPlayerBoard() const;

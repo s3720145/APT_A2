@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "LinkedList.h"
 #include <iostream>
+#include <fstream>
 
 using std::cout;
 
@@ -82,9 +83,8 @@ void Player::setMosaic(string inputMsc) {
     }
 }
 
-char& Player::getMosaic() {
-    char& mosaicRef = mosaic[0][0];
-    return mosaicRef;
+std::array<std::array<char, 5>, 5>& Player::getMosaic() {
+    return mosaic;
 }
 
 void Player::printPlayerBoard() const {
@@ -101,7 +101,7 @@ void Player::printPlayerBoard() const {
         // Prints the mosaic
         cout << "||";
         for(int col_num = 0; col_num < ARRAY_DIM; ++col_num) {
-            std::cout << mosaic[row_num][col_num];
+            cout << mosaic[row_num][col_num];
         }
         cout << std::endl;
     }
