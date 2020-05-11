@@ -1,11 +1,14 @@
 #include "Player.h"
 #include "LinkedList.h"
 #include <iostream>
+#include <fstream>
 
 using std::cout;
 
-Player::Player(string playerName) {
+// Default constructor
+Player::Player(string playerName, int score) {
     this->playerName = playerName;
+    this->score = score;
     initialiseStructures();
 }
 
@@ -53,14 +56,35 @@ string Player::getPlayerName() const {
     return playerName;
 }
 
+void Player::setScore(const int score) {
+    this->score = score;
+}
+
+int Player::getScore() const {
+    return score;
+}
+
+void Player::setStorage(char* inputStr[]) {
+    
+}
+
 Tile::Colour& Player::getStorage() {
     Tile::Colour& storageRef = storage[0][0];
     return storageRef;
 }
 
-char& Player::getMosaic() {
-    char& mosaicRef = mosaic[0][0];
-    return mosaicRef;
+void Player::setMosaic(string inputMsc) {
+    int stringCounter = 0;
+    for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
+        for(int col_num = 0; col_num < ARRAY_DIM; ++col_num) {
+            mosaic[row_num][col_num] = inputMsc[stringCounter];
+            ++stringCounter;
+        }
+    }
+}
+
+std::array<std::array<char, 5>, 5>& Player::getMosaic() {
+    return mosaic;
 }
 
 void Player::printPlayerBoard() const {
@@ -77,7 +101,7 @@ void Player::printPlayerBoard() const {
         // Prints the mosaic
         cout << "||";
         for(int col_num = 0; col_num < ARRAY_DIM; ++col_num) {
-            std::cout << mosaic[row_num][col_num];
+            cout << mosaic[row_num][col_num];
         }
         cout << std::endl;
     }
@@ -133,4 +157,18 @@ void Player::clearStorageRows(LinkedList& boxLid) {
             }
         }
     }
+}
+
+bool Player::insertIntoBrokenTiles(Tile::Colour tile) {
+    bool insertSuccess = false;
+    int index = 0;
+
+    while(brokenTiles[index] != Tile::NoTile && index < NUM_BROKEN_TILES) ++index;
+
+    if(index < NUM_BROKEN_TILES) {
+        brokenTiles[index] = tile;
+        insertSuccess = true;
+    } 
+
+    return std::move(insertSuccess);
 }
