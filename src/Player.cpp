@@ -2,6 +2,7 @@
 #include "LinkedList.h"
 #include <iostream>
 #include <fstream>
+#include <cstring>
 
 using std::cout;
 
@@ -64,27 +65,55 @@ int Player::getScore() const {
     return score;
 }
 
-void Player::setStorage(char* inputStr[]) {
-    
+void Player::setStorage(string inputStorage) {
+    // Converting string to char array
+    char *cInputStorage = new char[inputStorage.length() + 1];
+    // Copies contents of string to char array
+    std::strcpy(cInputStorage, inputStorage.c_str());
+  
+    int stringCounter = 0;
+    for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
+        for(int col_num = 0; col_num <= row_num; ++col_num) {
+            while(inputStorage[stringCounter] == '\n' || inputStorage[stringCounter] == '\r') {
+                ++stringCounter;
+            }
+            int tileInt = (int) inputStorage[stringCounter];
+            storage[row_num][col_num] = (Tile::Colour) tileInt;
+            ++stringCounter;
+        }
+    }
+
+    delete[] cInputStorage;
 }
 
-Tile::Colour& Player::getStorage() {
-    Tile::Colour& storageRef = storage[0][0];
-    return storageRef;
+Tile::Colour* Player::getStorageTile(const int row_num, const int col_num) {
+    Tile::Colour* storageTileRef;
+    if((row_num >= 0 && row_num < ARRAY_DIM) && (col_num >= 0 && col_num <= row_num)) {
+        storageTileRef = &storage[row_num][col_num];
+    } else {
+        storageTileRef = nullptr;
+    }
+    return storageTileRef;
 }
 
-void Player::setMosaic(string inputMsc) {
+void Player::setMosaic(string inputMosaic) {
     int stringCounter = 0;
     for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
         for(int col_num = 0; col_num < ARRAY_DIM; ++col_num) {
-            mosaic[row_num][col_num] = inputMsc[stringCounter];
+            mosaic[row_num][col_num] = inputMosaic[stringCounter];
             ++stringCounter;
         }
     }
 }
 
-std::array<std::array<char, 5>, 5>& Player::getMosaic() {
-    return mosaic;
+char* Player::getMosaicTile(const int row_num, const int col_num) {
+    char* mosaicTileReference;
+    if((row_num >= 0 && row_num < ARRAY_DIM) && (col_num >= 0 && col_num <= ARRAY_DIM)) {
+        mosaicTileReference = &mosaic[row_num][col_num];
+    } else {
+        mosaicTileReference = nullptr;
+    }
+    return mosaicTileReference;
 }
 
 void Player::printPlayerBoard() const {

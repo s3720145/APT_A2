@@ -7,16 +7,18 @@
 
 namespace Tile {
     enum Colour {
-        FirstPlayer,
-        Red,
-        Yellow,
-        DarkBlue,
-        LightBlue,
-        Black,
-        NoTile
+        FirstPlayer = 'F',
+        Red = 'R',
+        Yellow = 'Y',
+        DarkBlue = 'B',
+        LightBlue = 'L',
+        Black = 'U',
+        NoTile = '.'
     };
 
     const char getTileColourAsString(Colour colour);
+
+    const int getTileColourAsInt(Colour colour);
 }
 
 #endif // TILE
