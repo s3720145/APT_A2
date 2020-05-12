@@ -35,21 +35,32 @@ public:
 
     int getScore() const;
 
-    void setStorage(char* inputStr[]);
+    void setStorage(string inputStorage);
 
-    // Returns a reference of the storage rows.
-    Tile::Colour& getStorage();
+    /**
+     * Returns a pointer to storage[row_num][col_num]. Returns null if the 
+     * contract is violated.
+     * 
+     * row_num MUST be >= 0 and < ARRAY_DIM
+     * col_num MUST be >= 0 and <= row_num
+     */
+    Tile::Colour* getStorageTile(const int row_num, const int col_num);
 
     void setMosaic(string inputMosaic);
 
-    // Returns a pointer to a mosaic[row_num][col_num]
-    char* getMosaicTile(int row_num, int col_num);
+    /**
+     * Returns a pointer to mosaic[row_num][col_num]. Returns null if the 
+     * contract is violated.
+     * 
+     * row_num and col_num MUST be >= 0 and < ARRAY_DIM
+     */
+    char* getMosaicTile(const int row_num, const int col_num);
 
     // Prints the player's mosaic and storage rows.
     void printPlayerBoard() const;
 
     // Inserts a tile into the mosaic.
-    void InsertIntoMosaic(const int row, const Tile::Colour tile);
+    void InsertIntoMosaic(const int row_num, const Tile::Colour tile);
 
     /**
      * Inserts a tile into a storage row. user specifies the storage row the 
@@ -62,7 +73,7 @@ public:
      *  -IF insertion fail you must place tile in the broken section
      *  -Cannot place tile into storage if that row already has a same colour tile in the mosaic
      * 
-     * rowNumber MUST be >= 1 and <= 5
+     * row_num MUST be >= 1 and <= 5
      */
     bool insertIntoStorage(const int row_num, const Tile::Colour tile);
 

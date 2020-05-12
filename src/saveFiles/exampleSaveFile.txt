@@ -1,0 +1,29 @@
+284593		// seed (if no seed exists, use a random seed)
+true		// player1turn boolean variable or equivalent
+player1 	// player1 name
+16		// player1 score
+player2 	// player2 name
+8		// player2 score
+FBULLYYRR	// centre factory
+RYYU		// factory 1
+		// factory 2 (empty)
+BLLL		// factory 3
+RRUU		// factory 4
+RYBL		// factory 5
+.					// player1 1st line/storage
+..					// player1 2nd line/storage
+.YY					// player1 3rd line/storage
+...R					// player1 4th line/storage
+..UUU					// player1 5th line/storage
+R					// player1 floor line/broken tiles
+byRullbyruULbyrrUlbyyrUlb		// player1 mosaic/wall
+.					// player2 1st line/storage
+.Y					// player2 2st line/storage
+..R					// player2 3rd line/storage
+...G					// player2 4th line/storage
+.UUUU					// player2 5th line/storage
+YYBRLU					// player2 floor line/broken tiles
+ByrullbyruulbyrrulbyyrulB		// player2 mosaic/wall
+RRYBBBLLUUURBLUBLULURB 					// Lid
+RRRRRRRRRRYYYYYYYYYYBBBBBBBBBBBBLLLLLLLLLUUUUUUU	// Tile bag
+
