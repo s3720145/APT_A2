@@ -6,7 +6,7 @@
 #include "Tile.h"
 
 #define ARRAY_DIM           5
-#define NUM_BROKEN_TILES    7
+#define MAX_BROKEN_TILES    7
 
 using std::string;
 
@@ -56,6 +56,14 @@ public:
      */
     char* getMosaicTile(const int row_num, const int col_num);
 
+    void setBrokenTiles(string inputBroken);
+
+    Tile::Colour* getBrokenTile(const int col_num);
+
+    int getPointPenalty();
+
+    int getNumBrokenTiles();
+
     // Prints the player's mosaic and storage rows.
     void printPlayerBoard() const;
 
@@ -91,6 +99,9 @@ private:
 
     int score;
 
+    // Keeps track of the number of broken tiles
+    int numBrokenTiles;
+
     // Storage rows on the left-hand side of the player's mosaic
     Tile::Colour storage[ARRAY_DIM][ARRAY_DIM];
 
@@ -98,7 +109,7 @@ private:
     char mosaic[ARRAY_DIM][ARRAY_DIM];
 
     // Player broken tiles
-    Tile::Colour brokenTiles[NUM_BROKEN_TILES];
+    Tile::Colour brokenTiles[MAX_BROKEN_TILES];
 };
 
 #endif // PLAYER

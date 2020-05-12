@@ -15,6 +15,7 @@ PlayerTests::PlayerTests() {
     cout << "TESTING PLAYER ..." << endl;
     mosaicTest();
     storageTest();
+    brokenTileTest();
 }
 
 PlayerTests::~PlayerTests() {
@@ -35,9 +36,6 @@ void PlayerTests::mosaicTest() {
         std::cout << "Somthing failed while opening the file\n";
     }
 
-    // deletes content once closed
-    //outputFile.open("../output/mosaic-output.txt", std::fstream::out | std::fstream::trunc);
-
     inputFile.clear();
     while(std::getline(inputFile, mosaicInput)) {
         // the read worked and the line is valid
@@ -51,8 +49,6 @@ void PlayerTests::mosaicTest() {
         }
     }
 
-    testPlayer->printPlayerBoard();
-
     inputFile.close();
     outputFile.close();
 }
@@ -62,7 +58,7 @@ void PlayerTests::storageTest() {
 
     std::ifstream inputFile("src/tests/input/storage-input.txt");
     std::ofstream outputFile("src/tests/output/storage-output.txt");
-    string storageInput;
+    string textRead;
     string combinedInput;
     string storageOutput;
 
@@ -71,29 +67,48 @@ void PlayerTests::storageTest() {
     }
 
     inputFile.clear();
-    while(std::getline(inputFile, storageInput, '\r')) {
+    while(std::getline(inputFile, textRead, '\r')) {
         // the read worked and the line is valid
-        cout << storageInput;
-        storageInput.pop_back();
-        //combinedInput += storageInput;
-        combinedInput.append(storageInput);
+        combinedInput.append(textRead);
     }
 
-    //combinedInput.replace("\n", "");
-    //combinedInput.erase(std::remove(combinedInput.begin(), combinedInput.end(), '\n'), combinedInput.end());
-
-    cout << combinedInput << endl;
+    combinedInput.erase(std::remove(combinedInput.begin(), combinedInput.end(), '\n'), combinedInput.end());
 
     testPlayer->setStorage(combinedInput);
 
     for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
-        for(int col_num = 0; col_num <= row_num; ++col_num) {
+        for(int col_num = row_num; col_num >= 0; --col_num) {
             outputFile << getTileColourAsString(*testPlayer->getStorageTile(row_num, col_num));
         }
         outputFile << '\n';
     }
 
-    testPlayer->printPlayerBoard();
+    inputFile.close();
+    outputFile.close();
+}
+
+void PlayerTests::brokenTileTest() {
+    cout << "TESTING PLAYER BROKEN TILES ..." << endl;
+
+    std::ifstream inputFile("src/tests/input/broken-input.txt");
+    std::ofstream outputFile("src/tests/output/broken-output.txt");
+    string brokenInput;
+    string brokenOutput;
+
+    if (!inputFile) {
+        std::cout << "Something failed while opening the file \n";
+    }
+
+    inputFile.clear();
+    while(std::getline(inputFile, brokenInput)) {
+        // the read worked and the line is valid
+    }
+
+    testPlayer->setBrokenTiles(brokenInput);
+
+    for(int i = 0; i < testPlayer->getNumBrokenTiles(); ++i) {
+        outputFile << getTileColourAsString(*testPlayer->getBrokenTile(i));
+    }
 
     inputFile.close();
     outputFile.close();

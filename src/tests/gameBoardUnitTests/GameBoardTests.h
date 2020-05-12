@@ -1,6 +1,8 @@
 #ifndef GAMEBOARD_TESTS
 #define GAMEBOARD_TESTS
 
+#include <string>
+
 class GameBoardTests {
 public:
     GameBoardTests();

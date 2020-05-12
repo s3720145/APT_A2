@@ -1,5 +1,5 @@
 #include "GameBoardTests.h"
-#include "GameBoard.h"
+#include "../../GameBoard.h"
 #include <fstream>
 #include <iostream>
 

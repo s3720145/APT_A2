@@ -66,24 +66,14 @@ int Player::getScore() const {
 }
 
 void Player::setStorage(string inputStorage) {
-    // Converting string to char array
-    char *cInputStorage = new char[inputStorage.length() + 1];
-    // Copies contents of string to char array
-    std::strcpy(cInputStorage, inputStorage.c_str());
-  
     int stringCounter = 0;
     for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
-        for(int col_num = 0; col_num <= row_num; ++col_num) {
-            while(inputStorage[stringCounter] == '\n' || inputStorage[stringCounter] == '\r') {
-                ++stringCounter;
-            }
+        for(int col_num = row_num; col_num >= 0; --col_num) {
             int tileInt = (int) inputStorage[stringCounter];
             storage[row_num][col_num] = (Tile::Colour) tileInt;
             ++stringCounter;
         }
     }
-
-    delete[] cInputStorage;
 }
 
 Tile::Colour* Player::getStorageTile(const int row_num, const int col_num) {
@@ -116,6 +106,46 @@ char* Player::getMosaicTile(const int row_num, const int col_num) {
     return mosaicTileReference;
 }
 
+void Player::setBrokenTiles(string inputBroken) {
+    int stringCounter = 0;
+    int length = inputBroken.length();
+    for(int i = 0; i < length; ++i) {
+        int tileInt = (int) inputBroken[stringCounter];
+        brokenTiles[i] = (Tile::Colour) tileInt;
+        ++numBrokenTiles;
+        ++stringCounter;
+    }
+}
+
+Tile::Colour* Player::getBrokenTile(const int col_num) {
+    Tile::Colour* brokenTileRef;
+    if(col_num >= 0 && col_num < MAX_BROKEN_TILES) {
+        brokenTileRef = &brokenTiles[col_num];
+    } else {
+        brokenTileRef = nullptr;
+    }
+    return brokenTileRef;
+}
+
+int Player::getPointPenalty() {
+    int pointPenalty = 0;
+    for(int i = 0; i < numBrokenTiles; ++i) {
+        if(i < 2) {
+            pointPenalty += 1;
+        } else if(i > 2 && i < 5) {
+            pointPenalty += 2;
+        } else {
+            pointPenalty += 3;
+        }
+    }
+
+    return pointPenalty;
+}
+
+int Player::getNumBrokenTiles() {
+    return numBrokenTiles;
+}
+
 void Player::printPlayerBoard() const {
     for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
         cout << row_num + 1 << ':';
@@ -134,6 +164,10 @@ void Player::printPlayerBoard() const {
         }
         cout << std::endl;
     }
+    for(int i = 0; i <= numBrokenTiles - 1; ++i) {
+        cout << getTileColourAsString(brokenTiles[i]);
+    }
+    cout << std::endl;
 }
 
 void Player::InsertIntoMosaic(const int row_num, const Tile::Colour tile) {
@@ -188,13 +222,14 @@ void Player::clearStorageRows(LinkedList& boxLid) {
     }
 }
 
+// MUST OPTIMISE
 bool Player::insertIntoBrokenTiles(Tile::Colour tile) {
     bool insertSuccess = false;
     int index = 0;
 
-    while(brokenTiles[index] != Tile::NoTile && index < NUM_BROKEN_TILES) ++index;
+    while(brokenTiles[index] != Tile::NoTile && index < MAX_BROKEN_TILES) ++index;
 
-    if(index < NUM_BROKEN_TILES) {
+    if(index < MAX_BROKEN_TILES) {
         brokenTiles[index] = tile;
         insertSuccess = true;
     } 

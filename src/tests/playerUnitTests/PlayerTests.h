@@ -15,6 +15,8 @@ private:
     void mosaicTest();
 
     void storageTest();
+
+    void brokenTileTest();
 };
 
 #endif // PLAYER_TESTS
