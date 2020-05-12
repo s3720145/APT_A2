@@ -5,7 +5,16 @@ LinkedList::LinkedList() {
 }
 
 LinkedList::~LinkedList() {
-    // TODO
+    Node* n = head;
+    Node* currentNode = nullptr;
+
+    while (n != nullptr) {
+        currentNode = n;
+        n = n->getNextNode();
+        delete(currentNode);
+    }
+    
+    head = nullptr;
 }
 
 int LinkedList::size() {
