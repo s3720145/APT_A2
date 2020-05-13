@@ -68,7 +68,9 @@ public:
     void printPlayerBoard() const;
 
     // Inserts a tile into the mosaic.
-    void InsertIntoMosaic(const int row_num, const Tile::Colour tile);
+    void insertIntoMosaic(const int row_num, const Tile::Colour tile);
+
+    bool isInMosaicRow(const int row_num, Tile::Colour tile);
 
     /**
      * Inserts a tile into a storage row. user specifies the storage row the 
@@ -92,7 +94,7 @@ public:
      */
     void clearStorageRows(LinkedList& boxLid);
 
-    bool insertIntoBrokenTiles(Tile::Colour tile);
+    void insertIntoBrokenTiles(Tile::Colour tile);
 
 private:
     string playerName;
