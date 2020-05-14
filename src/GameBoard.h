@@ -12,11 +12,15 @@ public:
     GameBoard(std::vector<Tile::Colour> centreFactory);
     ~GameBoard();
 
+    void switchCurrentPlayer();
+
     // Getter
-    std::vector<Tile::Colour> getCentreFactory();
-    Tile::Colour getFactoryTile(int row, int column);
+    std::vector<Tile::Colour>& getCentreFactory();
     LinkedList* getTileBag();
     LinkedList* getBoxLid();
+    Player* getCurrentPlayer();
+    // row 0 = factory 1 ensure correct row usage
+    Tile::Colour getFactoryTile(int row, int column);
 
     // Setter
     void setFactoryTile(Tile::Colour tile, int row, int column);
@@ -34,6 +38,7 @@ private:
     // Players
     Player* playerOne;
     Player* playerTwo;
+    Player* currentPlayer;
 
     // Initialise tile bag with a randomize set of tiles
     void initialiseTileBag(int seed);

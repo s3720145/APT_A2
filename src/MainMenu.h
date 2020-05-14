@@ -4,27 +4,41 @@
 #include <iostream>
 #include <climits>
 #include <string>
+#include "GameBoard.h"
 
 class MainMenu {
 public:
     MainMenu();
     ~MainMenu();
 
-    void displayMenu();
+    void displayMenu(int seed);
 
 private:
 
     // Starts a new game
-    void newGame();
+    void newGame(int seed);
+
+    // Starts a new round
+    void newRound(GameBoard* gameBoard);
 
     // Resumes a game from a save file
     void loadGame();
 
     // Show student information
-    void showCredits();
+    void showCredits(int seed);
 
     // Quit the game
     void quit();
+
+    // Printing functions
+    void printFactories(GameBoard* gameBoard);
+    void printCurrentPlayerMozaic(GameBoard* gameBoard);
+
+    // Player turn
+    string playerTurn();
+
+    // Argument Error check
+    bool userTurnErrorCheck(string userTurn, std::vector<string>& userTurnArray);
 };
 
 #endif // MAIN_MENU_H
