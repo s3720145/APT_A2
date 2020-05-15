@@ -66,11 +66,44 @@ void MainMenu::newGame(int seed) {
     cout << "Let's Play" << "\n\n";
 
     GameBoard* gameBoard = new GameBoard(playerOneName, playerTwoName, seed);
+    
+    // Need to do end of game condition for every new round
     newRound(gameBoard);
+
 }
 
 void MainMenu::newRound(GameBoard* gameBoard) {
     cout << "=== Start Round ===" << "\n";
+    
+    // Player turns 
+    do {
+        currentPlayerTurn(gameBoard);
+    } while (!(isEndOfRound(gameBoard)));
+    
+    // End of round
+
+    // Player 1 transfer full row into mosaic 
+    Player* playerOne = gameBoard->getPlayerOne();
+    playerOne->clearStorageRows(*gameBoard->getBoxLid());
+    // Player 2 transfer full row into mosaic 
+    Player* playerTwo = gameBoard->getPlayerTwo();
+    playerTwo->clearStorageRows(*gameBoard->getBoxLid());
+
+    // Calculate points
+
+    // Print player information
+    playerOne->printPlayerBoard();
+    playerTwo->printPlayerBoard();
+
+    // Reset centre factory
+    gameBoard->getCentreFactory().clear();
+    // Refill
+    gameBoard->initialiseFactories();
+    
+    cout << endl;
+}
+
+void MainMenu::currentPlayerTurn(GameBoard* gameBoard) {
     cout << "TURN FOR PLAYER: " << gameBoard->getCurrentPlayer()->getPlayerName();
     cout << endl;
 
@@ -80,38 +113,102 @@ void MainMenu::newRound(GameBoard* gameBoard) {
 
     string userTurn;
     std::vector<string> userTurnArray;
-
-    // Complete error check
-    do {
-        userTurn = playerTurn();
-    } while (!(userTurnErrorCheck(userTurn, userTurnArray)));
-
-    
-    // Get commands
-    int factory = std::stoi(userTurnArray.at(0))-1;
-    string tileColour = userTurnArray.at(1);
-    int storageRow = std::stoi(userTurnArray.at(2));
-
-    
     std::vector<Tile::Colour> chosenTiles;
-    // Get tile/s from factory
-    for (int j = 0; j < FACTORY_WIDTH; j++) {
-        Tile::Colour currentTile = gameBoard->getFactoryTile(factory, j);
+    int storageRow = 0;
+
+    // Valid Rule check
+    bool turnIsValid = false;
+    do {
+        // Complete argument error check
+        do {
+            userTurn = playerInput();
+        } while (!(userTurnErrorCheck(userTurn, userTurnArray)));
         
-        if (Tile::getTileColourAsString(currentTile) == tileColour[0]) {
-            // Add correct tiles to temp vector
-            chosenTiles.push_back(currentTile);
-            // set to no tile in factory 
-            gameBoard->setFactoryTile(Tile::NoTile, factory, j);
+        // Get commands
+        int factory = std::stoi(userTurnArray.at(0))-1;
+        string tileColour = userTurnArray.at(1);
+        storageRow = std::stoi(userTurnArray.at(2));
+
+        // Get tile/s from centre factory
+        if (factory == -1) {
+            for (Tile::Colour currentTile: gameBoard->getCentreFactory()) {
+                if (Tile::getTileColourAsString(currentTile) == tileColour[0]) {
+                    // Add correct tiles to temp vector
+                    chosenTiles.push_back(currentTile);
+                }
+            }
+
+        } // Otherwise get tiles from other factories
+        else {
+            for (int j = 0; j < FACTORY_WIDTH; j++) {
+                Tile::Colour currentTile = gameBoard->getFactoryTile(factory, j);
+                
+                if (Tile::getTileColourAsString(currentTile) == tileColour[0]) {
+                    // Add correct tiles to temp vector
+                    chosenTiles.push_back(currentTile);
+                }
+            }
+        }
+        
+        // First turn check
+        if (gameBoard->isFirstTurn() && factory == -1) {
+            cout << "Can't choose the centre factory on the first turn" << endl;
+            userTurnArray.clear();
+            chosenTiles.clear();
+        } // Null check
+        else if (chosenTiles.empty()) {
+            cout << "No Tiles match your option. Try Again" << endl;
+            userTurnArray.clear();
+        } // Check first element for rule check
+        else if (gameBoard->getCurrentPlayer()->insertIntoStorage(storageRow, chosenTiles.front())) {
+            // Removed from temporary vector
+            chosenTiles.pop_back();
+            // Adjust the factories to reflect the valid move
+            if (factory == -1) {
+                // Check if first element is first player
+                if (gameBoard->getCentreFactory().front() == Tile::FirstPlayer) {
+                    // Insert into broken tiles
+                    gameBoard->getCurrentPlayer()->insertIntoBrokenTiles(Tile::FirstPlayer);
+                    gameBoard->getCentreFactory().erase(gameBoard->getCentreFactory().begin());
+                }
+                for (int i = 0; i < gameBoard->getCentreFactory().size(); i++) {
+                    Tile::Colour currentTile = gameBoard->getCentreFactory()[i];
+                    if (Tile::getTileColourAsString(currentTile) == tileColour[0]) {
+                        gameBoard->getCentreFactory()[i] = Tile::NoTile;
+                    }
+                    
+                }
+                
+                cout << endl;
+            }
+            else {
+                for (int j = 0; j < FACTORY_WIDTH; j++) {
+                    Tile::Colour currentTile = gameBoard->getFactoryTile(factory, j);
+                    
+                    if (Tile::getTileColourAsString(currentTile) == tileColour[0]) {
+                        // set to no tile in factory 
+                        gameBoard->setFactoryTile(Tile::NoTile, factory, j);
+                    }
+                    else {
+                        // Add to centre factory
+                        gameBoard->getCentreFactory().push_back(currentTile);
+                        // set to no tile in factory 
+                        gameBoard->setFactoryTile(Tile::NoTile, factory, j);
+                    }
+                }
+            }
+            
+            // No game rules violated
+            turnIsValid = true;
+            cout << "Turn successful" << endl;
         }
         else {
-            // Add to centre factory
-            gameBoard->getCentreFactory().push_back(currentTile);
-            // set to no tile in factory 
-            gameBoard->setFactoryTile(Tile::NoTile, factory, j);
+            cout << "Storage row has a different tile or mozaic already contains tile. Try Again" << endl;
+            // Reset chosen tiles
+            chosenTiles.clear();
+            userTurnArray.clear();
         }
-    }
-    
+    } while (!(turnIsValid));
     
     // Add to players mozaic with storage row
     for (Tile::Colour tile: chosenTiles) {
@@ -119,23 +216,21 @@ void MainMenu::newRound(GameBoard* gameBoard) {
         if (gameBoard->getCurrentPlayer()->insertIntoStorage(storageRow, tile)) {
             // Removed from temporary vector
             chosenTiles.pop_back();
-        } // Otherwise add to broken tiles
-        else {
-            cout << gameBoard->getCurrentPlayer()->insertIntoBrokenTiles(tile);
+        } 
+        else { // Otherwise add to broken tiles
+            gameBoard->getCurrentPlayer()->insertIntoBrokenTiles(tile);
+            // Removed from temporary vector
+            chosenTiles.pop_back();
         }
     }
 
     cout << endl;
 
-    // Test
-    printFactories(gameBoard);
-    printCurrentPlayerMozaic(gameBoard);
-    
-
-    cout << endl;
+    // Change current player
+    gameBoard->switchCurrentPlayer();
 }
 
-string MainMenu::playerTurn() {
+string MainMenu::playerInput() {
     string userTurn;
     // current player turn
     cout << "> turn ";
@@ -204,10 +299,11 @@ bool MainMenu::userTurnErrorCheck(string userTurn, std::vector<string>& userTurn
         else { // Check if numbers are between 1 and 5
             int factoryAsInt = std::stoi(factory);
             int storageAsInt = std::stoi(storageRow);
-            if (!(factoryAsInt >= 1 && factoryAsInt <= 5) || !(storageAsInt >= 1 && storageAsInt <= 5)) {
+            if (!(factoryAsInt >= 0 && factoryAsInt <= 5) || !(storageAsInt >= 1 && storageAsInt <= 5)) {
                 noErrors = false;
                 userTurnArray.clear();
-                cout << "You must enter an integer between 1 and 5" << endl;
+                cout << "You must enter an integer between 0 and 5 for factories" << endl;
+                cout << "You must enter an integer between 1 and 5 for storage" << endl;
                 cin.clear();
             }
         }
@@ -221,7 +317,9 @@ void MainMenu::printFactories(GameBoard* gameBoard) {
     cout << "Factories:" << endl;
     cout << "0: ";
     for (Tile::Colour tile: gameBoard->getCentreFactory()) {
-        cout << Tile::getTileColourAsString(tile);
+        if (Tile::getTileColourAsString(tile) != '.') {
+            cout << Tile::getTileColourAsString(tile);
+        }
     }
     cout << endl;
     
@@ -229,11 +327,51 @@ void MainMenu::printFactories(GameBoard* gameBoard) {
     for (int i = 0; i < DIM; i++) {
         cout << (i+1) << ": ";
         for (int j = 0; j < FACTORY_WIDTH; j++) {
-            // do check for no tile Tile
-            cout << Tile::getTileColourAsString(gameBoard->getFactoryTile(i, j));
+            Tile::Colour tile = gameBoard->getFactoryTile(i, j);
+            if (Tile::getTileColourAsString(tile) != '.') {
+                cout << Tile::getTileColourAsString(gameBoard->getFactoryTile(i, j));
+            }
         }
         cout << endl;
     }
+}
+
+bool MainMenu::isEndOfRound(GameBoard* gameBoard) {
+    bool isEmpty = false;
+
+    // Check centre factory
+    bool isCentreFactoryEmpty = true;
+    for (int i = 0; i < gameBoard->getCentreFactory().size() && isCentreFactoryEmpty == true; i++) {
+
+        Tile::Colour currentTile = gameBoard->getCentreFactory()[i];
+        if (Tile::getTileColourAsString(currentTile) != '.') {
+            isCentreFactoryEmpty = false;
+        }
+        
+    }
+
+    bool areFactoriesEmpty = true;
+    // Loop through 2d factories array 
+    // breakLoop stops the for loop from continuing if it contains a tile colour
+    bool breakLoop = false;
+    for (int i = 0; i < DIM && breakLoop == false; i++) {
+        for (int j = 0; j < FACTORY_WIDTH && breakLoop == false; j++) {
+
+            Tile::Colour currentTile = gameBoard->getFactoryTile(i, j);
+            if (Tile::getTileColourAsString(currentTile) != '.') {
+                areFactoriesEmpty = false;
+                breakLoop = true;
+            }
+
+        }
+    }
+    
+    if (isCentreFactoryEmpty && areFactoriesEmpty) {
+        cout << "=== END OF ROUND ===" << endl;
+        isEmpty = true;
+    }
+    
+    return isEmpty;
 }
 
 void MainMenu::printCurrentPlayerMozaic(GameBoard* gameBoard) {

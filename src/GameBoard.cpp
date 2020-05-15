@@ -16,19 +16,8 @@ GameBoard::GameBoard(std::string playerOneName, std::string playerTwoName, int s
     // Fill the tile bag
     initialiseTileBag(seed);
 
-    // Add first player tile to the centre factory
-    centreFactory.push_back(Tile::FirstPlayer);
-
-    // Add tiles from the tile bag to the factories
-    for (int i = 0; i < DIM; i++) {
-
-        for (int j = 0; j < FACTORY_WIDTH; j++) {
-            Tile::Colour tile = tileBag->dequeue()->getTileColour();
-            factories[i][j] = tile;
-        }
-
-    }
-
+    // Put tiles into the factoris and set up centre factory
+    initialiseFactories();
 }
 
 GameBoard::GameBoard(std::vector<Tile::Colour> centreFactory) {
@@ -69,8 +58,33 @@ void GameBoard::initialiseTileBag(int seed) {
     
 }
 
+void GameBoard::initialiseFactories() {
+    // Add first player tile to the centre factory
+    centreFactory.push_back(Tile::FirstPlayer);
+
+    // Add tiles from the tile bag to the factories
+    for (int i = 0; i < DIM; i++) {
+
+        for (int j = 0; j < FACTORY_WIDTH; j++) {
+            Tile::Colour tile = tileBag->dequeue()->getTileColour();
+            factories[i][j] = tile;
+        }
+
+    }
+}
+
 Player* GameBoard::getCurrentPlayer() {
     return this->currentPlayer;
+}
+
+bool GameBoard::isFirstTurn() {
+    bool isFirstTurn = false;
+    if (centreFactory.size() == 1) {
+        if (Tile::getTileColourAsString(centreFactory.front()) == 'F') {
+            isFirstTurn = true;
+        }
+    }
+    return isFirstTurn;
 }
 
 void GameBoard::switchCurrentPlayer() {
@@ -111,3 +125,10 @@ void GameBoard::setBoxLidElement(Tile::Colour tile) {
     this->boxLid->addBack(tile);
 }
 
+Player* GameBoard::getPlayerOne() {
+    return this->playerOne;
+}
+
+Player* GameBoard::getPlayerTwo() {
+    return this->playerTwo;
+}

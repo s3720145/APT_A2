@@ -180,12 +180,25 @@ void Player::insertIntoMosaic(const int row_num, const Tile::Colour tile) {
 
 bool Player::isInMosaicRow(const int row_num, Tile::Colour tile) {
     bool isInMosaic = false;
-
+    /**
     for(int i = 0; i < ARRAY_DIM; ++i) {
         int tileInt = (int) toupper(mosaic[row_num][i]);
         Tile::Colour mosaicTile = (Tile::Colour) tileInt;
         if(getTileColourAsString(mosaicTile) == getTileColourAsString(tile)) {
-            isInMosaic == true;
+            isInMosaic = true;
+        }
+    }
+    */
+    Tile::Colour colourArray[] = {Tile::Red, Tile::Yellow, Tile::DarkBlue, 
+        Tile::LightBlue, Tile::Black};
+        
+    for(int i = 0; i < ARRAY_DIM; ++i) {
+        int tileInt = (int) mosaic[row_num][i];
+        // Check if it matches current enums
+        for (Tile::Colour tile: colourArray) {
+            if (tileInt == tile) {
+                isInMosaic = true;
+            }
         }
     }
 
@@ -205,12 +218,14 @@ bool Player::insertIntoStorage(int row_num, const Tile::Colour tile) {
          * colour tile already inserted into the mosaic
          */
         for(int col_num = 0; col_num < row_num && breakLoop == false; ++col_num) {
+            if (isInMosaicRow(row_num - 1, tile) == true) {
+                breakLoop = true;
+            }
             if(getTileColourAsString(storage[row_num - 1][col_num]) == '.') {
                 storage[row_num - 1][col_num] = std::move(tile);
                 insertSuccess = true;
                 breakLoop = true;
-            } else if(getTileColourAsString(tile) != getTileColourAsString(storage[row_num - 1][col_num])
-                || isInMosaicRow(tile) == true) {
+            } else if(getTileColourAsString(tile) != getTileColourAsString(storage[row_num - 1][col_num])) {
                 breakLoop = true;
             }
         }
@@ -227,7 +242,7 @@ void Player::clearStorageRows(LinkedList& boxLid) {
          * insert into mosaic. Discard the rest into the box lid. 
          */
         if(getTileColourAsString(storage[row_num][row_num]) != '.') {
-            InsertIntoMosaic(row_num, storage[row_num][row_num]);
+            insertIntoMosaic(row_num, storage[row_num][row_num]);
             storage[row_num][row_num] = Tile::NoTile;
 
             for(int col_num = 0; col_num <= row_num - 1; ++col_num) {

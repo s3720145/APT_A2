@@ -20,6 +20,7 @@ private:
 
     // Starts a new round
     void newRound(GameBoard* gameBoard);
+    bool isEndOfRound(GameBoard* gameBoard);
 
     // Resumes a game from a save file
     void loadGame();
@@ -33,9 +34,10 @@ private:
     // Printing functions
     void printFactories(GameBoard* gameBoard);
     void printCurrentPlayerMozaic(GameBoard* gameBoard);
+    void currentPlayerTurn(GameBoard* gameBoard);
 
-    // Player turn
-    string playerTurn();
+    // Player input
+    string playerInput();
 
     // Argument Error check
     bool userTurnErrorCheck(string userTurn, std::vector<string>& userTurnArray);

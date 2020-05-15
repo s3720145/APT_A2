@@ -19,13 +19,19 @@ public:
     LinkedList* getTileBag();
     LinkedList* getBoxLid();
     Player* getCurrentPlayer();
+    Player* getPlayerOne();
+    Player* getPlayerTwo();
     // row 0 = factory 1 ensure correct row usage
     Tile::Colour getFactoryTile(int row, int column);
+
+
+    bool isFirstTurn();
 
     // Setter
     void setFactoryTile(Tile::Colour tile, int row, int column);
     void setTileBagElement(Tile::Colour tile);
     void setBoxLidElement(Tile::Colour tile);
+    void initialiseFactories();
     
 private:
     /* data */
