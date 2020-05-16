@@ -22,6 +22,9 @@ private:
     void newRound(GameBoard* gameBoard);
     bool isEndOfRound(GameBoard* gameBoard);
 
+    // Saves a game
+    void saveGame(string fileName);
+
     // Resumes a game from a save file
     void loadGame();
 

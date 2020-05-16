@@ -127,9 +127,9 @@ void MainMenu::currentPlayerTurn(GameBoard* gameBoard) {
         } while (!(userTurnErrorCheck(userTurn, userTurnArray)));
         
         // Get commands
-        int factory = std::stoi(userTurnArray.at(0))-1;
-        string tileColour = userTurnArray.at(1);
-        storageRow = std::stoi(userTurnArray.at(2));
+        int factory = std::stoi(userTurnArray.at(1))-1;
+        string tileColour = userTurnArray.at(2);
+        storageRow = std::stoi(userTurnArray.at(3));
 
         // Get tile/s from centre factory
         if (factory == -1) {
@@ -235,7 +235,7 @@ void MainMenu::currentPlayerTurn(GameBoard* gameBoard) {
 string MainMenu::playerInput() {
     string userTurn;
     // current player turn
-    cout << "> turn ";
+    cout << "> ";
     
     getline(cin >> std::ws, userTurn);
     return userTurn;
@@ -259,17 +259,40 @@ bool MainMenu::userTurnErrorCheck(string userTurn, std::vector<string>& userTurn
     userTurnArray.push_back(userTurn);
 
     // Check for argument number error
-    if (userTurnArray.size() != 3) {
-        noErrors = false;
-        userTurnArray.clear();
-        cout << "Incorrect number of arguments" << endl;
-        cin.clear();
+    if (userTurnArray.size() != 4) {
+        if (userTurnArray.size() == 2) {
+            // save file
+            string command = userTurnArray.at(0);
+            string fileName = userTurnArray.at(1);
+
+            if (command == "save") {
+                noErrors = false;
+                saveGame(fileName);
+                userTurnArray.clear();
+                cout << "Game successfully saved to '" << fileName << "'" << endl;
+                cin.clear();
+            }
+            else {
+                noErrors = false;
+                userTurnArray.clear();
+                cout << "You must enter the 'turn' or 'save' command" << endl;
+                cin.clear();
+            }
+        }
+        else {
+            noErrors = false;
+            userTurnArray.clear();
+            cout << "Incorrect number of arguments" << endl;
+            cin.clear();
+        }
+        
     }  // Check for argument type error
     else {
         // Get commands
-        string factory = userTurnArray.at(0);
-        string tileColour = userTurnArray.at(1);
-        string storageRow = userTurnArray.at(2);
+        string command = userTurnArray.at(0);
+        string factory = userTurnArray.at(1);
+        string tileColour = userTurnArray.at(2);
+        string storageRow = userTurnArray.at(3);
         
         // Check conversion to an int
         bool factoryIsAnInt = (factory.find_first_not_of("0123456789") == string::npos);
@@ -286,7 +309,13 @@ bool MainMenu::userTurnErrorCheck(string userTurn, std::vector<string>& userTurn
             }
         }
 
-        if (factoryIsAnInt == false || storageIsAnInt == false) {
+        if (command != "turn") {
+            noErrors = false;
+            userTurnArray.clear();
+            cout << "You must enter the 'turn' command" << endl;
+            cin.clear();
+        }
+        else if (factoryIsAnInt == false || storageIsAnInt == false) {
             noErrors = false;
             userTurnArray.clear();
             cout << "You must enter an integer between 1 and 5" << endl;
@@ -405,6 +434,10 @@ void MainMenu::printCurrentPlayerMozaic(GameBoard* gameBoard) {
         cout << Tile::getTileColourAsString(*gameBoard->getCurrentPlayer()->getBrokenTile(i));
     }
     cout << endl;
+}
+
+void MainMenu::saveGame(string fileName) {
+    // TODO
 }
 
 void MainMenu::loadGame() {
