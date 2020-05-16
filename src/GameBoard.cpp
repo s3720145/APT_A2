@@ -40,19 +40,58 @@ GameBoard::~GameBoard() {
 }
 
 void GameBoard::initialiseTileBag(int seed) {
+    Tile::Colour colourArray[] = {Tile::Red, Tile::Yellow, Tile::DarkBlue, 
+        Tile::LightBlue, Tile::Black};
+    // Check for number of tiles for the entire stack
+    int redCounter = 0;
+    int yellowCounter = 0;
+    int darkBlueCounter = 0;
+    int lightBlueCounter = 0;
+    int blackCounter = 0;
 
     for (int i = 0; i < BAG_SIZE; i++) {
         // seed the engine
         std::default_random_engine engine(++seed);
         //establish the range of values that the enum can be
         std::uniform_int_distribution<int> range(0, 4);
-
-        Tile::Colour colourArray[] = {Tile::Red, Tile::Yellow, Tile::DarkBlue, 
-        Tile::LightBlue, Tile::Black};
-        // Check for number of tiles for the entire stack
         
+        Tile::Colour randomTile = Tile::NoTile;
         // Generate numbers and cast them into an enum type
-        Tile::Colour randomTile = colourArray[range(engine)];
+        do {
+            randomTile = colourArray[range(engine)];
+        } while (randomTile == Tile::NoTile);
+        
+        if (randomTile == Tile::Red && redCounter < 20) {
+            if (redCounter == 19) {
+                colourArray[0] = Tile::NoTile;
+            }
+            redCounter++;
+        }
+        else if (randomTile == Tile::Yellow && yellowCounter < 20) {
+            if (yellowCounter == 19) {
+                colourArray[1] = Tile::NoTile;
+            }
+            yellowCounter++;
+        }
+        else if (randomTile == Tile::DarkBlue && darkBlueCounter < 20) {
+            if (darkBlueCounter == 19) {
+                colourArray[2] = Tile::NoTile;
+            }
+            darkBlueCounter++;
+        }
+        else if (randomTile == Tile::LightBlue && lightBlueCounter < 20) {
+            if (lightBlueCounter == 19) {
+                colourArray[3] = Tile::NoTile;
+            }
+            lightBlueCounter++;
+        }
+        else if (randomTile == Tile::Black && blackCounter < 20) {
+            if (blackCounter == 19) {
+                colourArray[4] = Tile::NoTile;
+            }
+            blackCounter++;
+        }
+
         tileBag->addBack(randomTile);
     }
     

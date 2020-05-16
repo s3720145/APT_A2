@@ -70,6 +70,8 @@ void MainMenu::newGame(int seed) {
     // Need to do end of game condition for every new round
     newRound(gameBoard);
 
+    // Delete GameBoard
+    delete gameBoard;
 }
 
 void MainMenu::newRound(GameBoard* gameBoard) {
