@@ -164,6 +164,7 @@ void Player::printPlayerBoard() const {
         }
         cout << std::endl;
     }
+    cout << "broken: ";
     for(int i = 0; i <= numBrokenTiles - 1; ++i) {
         cout << getTileColourAsString(brokenTiles[i]);
     }
@@ -205,6 +206,7 @@ bool Player::isInMosaicRow(const int row_num, Tile::Colour tile) {
     return std::move(isInMosaic);
 }
 
+// IF there are no more rows to insert in, place into storage
 bool Player::insertIntoStorage(int row_num, const Tile::Colour tile) {
     bool insertSuccess = false;
 
@@ -218,6 +220,7 @@ bool Player::insertIntoStorage(int row_num, const Tile::Colour tile) {
          * colour tile already inserted into the mosaic
          */
         for(int col_num = 0; col_num < row_num && breakLoop == false; ++col_num) {
+            // IF the tile being inserted is already in the mosaic row, break loop
             if (isInMosaicRow(row_num - 1, tile) == true) {
                 breakLoop = true;
             }
@@ -227,6 +230,11 @@ bool Player::insertIntoStorage(int row_num, const Tile::Colour tile) {
                 breakLoop = true;
             } else if(getTileColourAsString(tile) != getTileColourAsString(storage[row_num - 1][col_num])) {
                 breakLoop = true;
+            }
+
+            // IF we cannot insert a tile because all rows are full, insert into broken tile array
+            if(col_num == row_num - 1 && breakLoop == false) {
+                insertIntoBrokenTiles(tile);
             }
         }
     }
@@ -250,6 +258,13 @@ void Player::clearStorageRows(LinkedList& boxLid) {
                 storage[row_num][col_num] = Tile::NoTile;
             }
         }
+    }
+
+    // resets broken tile array
+    for(int i = 0; i < numBrokenTiles; ++i) {
+        boxLid.addBack(brokenTiles[i]);
+        brokenTiles[i] = Tile::NoTile;
+        numBrokenTiles = 0;
     }
 }
 

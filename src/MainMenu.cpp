@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "LinkedList.h"
 #include "tests/playerUnitTests/PlayerTests.h"
+#include <fstream>
 
 using std::cout;
 using std::cin;
@@ -92,6 +93,7 @@ void MainMenu::newRound(GameBoard* gameBoard) {
     playerTwo->clearStorageRows(*gameBoard->getBoxLid());
 
     // Calculate points
+    // TODO
 
     // Print player information
     playerOne->printPlayerBoard();
@@ -124,7 +126,7 @@ void MainMenu::currentPlayerTurn(GameBoard* gameBoard) {
         // Complete argument error check
         do {
             userTurn = playerInput();
-        } while (!(userTurnErrorCheck(userTurn, userTurnArray)));
+        } while (!(userTurnErrorCheck(userTurn, userTurnArray, gameBoard)));
         
         // Get commands
         int factory = std::stoi(userTurnArray.at(1))-1;
@@ -173,7 +175,7 @@ void MainMenu::currentPlayerTurn(GameBoard* gameBoard) {
                     gameBoard->getCurrentPlayer()->insertIntoBrokenTiles(Tile::FirstPlayer);
                     gameBoard->getCentreFactory().erase(gameBoard->getCentreFactory().begin());
                 }
-                for (int i = 0; i < gameBoard->getCentreFactory().size(); i++) {
+                for (int i = 0; i < (int) gameBoard->getCentreFactory().size(); i++) {
                     Tile::Colour currentTile = gameBoard->getCentreFactory()[i];
                     if (Tile::getTileColourAsString(currentTile) == tileColour[0]) {
                         gameBoard->getCentreFactory()[i] = Tile::NoTile;
@@ -241,7 +243,7 @@ string MainMenu::playerInput() {
     return userTurn;
 }
 
-bool MainMenu::userTurnErrorCheck(string userTurn, std::vector<string>& userTurnArray) {
+bool MainMenu::userTurnErrorCheck(string userTurn, std::vector<string>& userTurnArray, GameBoard* gameBoard) {
     
     bool noErrors = true;
     
@@ -267,9 +269,8 @@ bool MainMenu::userTurnErrorCheck(string userTurn, std::vector<string>& userTurn
 
             if (command == "save") {
                 noErrors = false;
-                saveGame(fileName);
+                saveGame(fileName, gameBoard);
                 userTurnArray.clear();
-                cout << "Game successfully saved to '" << fileName << "'" << endl;
                 cin.clear();
             }
             else {
@@ -372,7 +373,7 @@ bool MainMenu::isEndOfRound(GameBoard* gameBoard) {
 
     // Check centre factory
     bool isCentreFactoryEmpty = true;
-    for (int i = 0; i < gameBoard->getCentreFactory().size() && isCentreFactoryEmpty == true; i++) {
+    for (int i = 0; i < (int) gameBoard->getCentreFactory().size() && isCentreFactoryEmpty == true; i++) {
 
         Tile::Colour currentTile = gameBoard->getCentreFactory()[i];
         if (Tile::getTileColourAsString(currentTile) != '.') {
@@ -436,8 +437,85 @@ void MainMenu::printCurrentPlayerMozaic(GameBoard* gameBoard) {
     cout << endl;
 }
 
-void MainMenu::saveGame(string fileName) {
+void MainMenu::saveGame(string fileName, GameBoard* gameBoard) {
     // TODO
+
+    std::ofstream saveFile("src/saveFiles/" + fileName + ".txt");
+
+    if(saveFile.fail()) {
+        cout << "File not found";
+    } else {
+        cout << "Game successfully saved to '" << fileName << "'" << endl;
+    }
+
+    if(gameBoard->getCurrentPlayer() == gameBoard->getPlayerOne()) {
+        saveFile << "true" << '\n';
+    } else {
+        saveFile << "false" << '\n';
+    }
+
+    saveFile << gameBoard->getPlayerOne()->getPlayerName() << '\n';
+    saveFile << gameBoard->getPlayerOne()->getScore() << '\n';
+
+    saveFile << gameBoard->getPlayerTwo()->getPlayerName() << '\n';
+    saveFile << gameBoard->getPlayerTwo()->getScore() << '\n';
+
+    std::vector<Tile::Colour>& centreFactory = gameBoard->getCentreFactory();
+    for(int i = 0; i < (int) centreFactory.size(); ++i) {
+        saveFile << Tile::getTileColourAsString(centreFactory[i]);
+    }
+    saveFile << '\n';
+
+    for(int row_num = 0; row_num < DIM; ++row_num) {
+        for(int col_num = 0; col_num < FACTORY_WIDTH; ++col_num) {
+            saveFile << Tile::getTileColourAsString(gameBoard->getFactoryTile(row_num, col_num));
+        }
+        saveFile << '\n';
+    }
+
+    // Player 1
+    for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
+        for(int col_num = row_num; col_num >= 0; --col_num) {
+            saveFile << Tile::getTileColourAsString(*gameBoard->getPlayerOne()->getStorageTile(row_num, col_num));
+        }
+        saveFile << '\n';
+    }
+
+    for(int i = 0; i < gameBoard->getPlayerOne()->getNumBrokenTiles(); ++i) {
+        saveFile << Tile::getTileColourAsString(*gameBoard->getPlayerOne()->getBrokenTile(i));
+    }
+    saveFile << '\n';
+
+    for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
+        for(int col_num = 0; col_num < ARRAY_DIM; ++col_num) {
+            saveFile << gameBoard->getPlayerOne()->getMosaicTile(row_num, col_num);
+        }
+    }
+    saveFile << '\n';
+
+    // Player 2
+    for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
+        for(int col_num = row_num; col_num >= 0; --col_num) {
+            saveFile << Tile::getTileColourAsString(*gameBoard->getPlayerTwo()->getStorageTile(row_num, col_num));
+        }
+        saveFile << '\n';
+    }
+
+    for(int i = 0; i < gameBoard->getPlayerTwo()->getNumBrokenTiles(); ++i) {
+        saveFile << Tile::getTileColourAsString(*gameBoard->getPlayerTwo()->getBrokenTile(i));
+    }
+    saveFile << '\n';
+
+    for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
+        for(int col_num = 0; col_num < ARRAY_DIM; ++col_num) {
+            saveFile << gameBoard->getPlayerTwo()->getMosaicTile(row_num,col_num);
+        }
+    }
+    saveFile << '\n';
+
+
+
+    saveFile.close();
 }
 
 void MainMenu::loadGame() {
@@ -459,8 +537,8 @@ void MainMenu::showCredits(int seed) {
 
     for (student student : students) {
         cout << student.name << '\n'
-        << student.name << '\n'
-        << student.name << '\n'
+        << student.studentId << '\n'
+        << student.eMail << '\n'
         << "----------------- \n";
     }
 
