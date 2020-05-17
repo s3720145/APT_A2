@@ -280,10 +280,25 @@ bool MainMenu::userTurnErrorCheck(string userTurn, std::vector<string>& userTurn
             }
         }
         else {
-            noErrors = false;
-            userTurnArray.clear();
-            cout << "Incorrect number of arguments" << endl;
-            cin.clear();
+            if (userTurnArray.size() == 1) {
+                if (cin.eof()) {
+                    //escape
+                    cout << "^D" << endl;
+                }
+                else {
+                    noErrors = false;
+                    userTurnArray.clear();
+                    cout << "Incorrect number of arguments" << endl;
+                    cin.clear();
+                }
+            }
+            else {
+                noErrors = false;
+                userTurnArray.clear();
+                cout << "Incorrect number of arguments" << endl;
+                cin.clear();    
+            }
+            
         }
         
     }  // Check for argument type error
