@@ -69,6 +69,7 @@ void MainMenu::newGame(int seed) {
     GameBoard* gameBoard = new GameBoard(playerOneName, playerTwoName, seed);
     
     // Need to do end of game condition for every new round
+    // DO LOOP HERE AND END GAME CONDITION
     newRound(gameBoard);
 
     // Delete GameBoard
@@ -437,83 +438,96 @@ void MainMenu::printCurrentPlayerMozaic(GameBoard* gameBoard) {
     cout << endl;
 }
 
+// MAKE IMPROVEMENTS
 void MainMenu::saveGame(string fileName, GameBoard* gameBoard) {
-    // TODO
-
     std::ofstream saveFile("src/saveFiles/" + fileName + ".txt");
 
     if(saveFile.fail()) {
         cout << "File not found";
     } else {
+        if(gameBoard->getCurrentPlayer() == gameBoard->getPlayerOne()) {
+        saveFile << "true" << '\n';
+        } else {
+            saveFile << "false" << '\n';
+        }
+
+        // player 1 name and score
+        saveFile << gameBoard->getPlayerOne()->getPlayerName() << '\n';
+        saveFile << gameBoard->getPlayerOne()->getScore() << '\n';
+
+        // player 2 name and score
+        saveFile << gameBoard->getPlayerTwo()->getPlayerName() << '\n';
+        saveFile << gameBoard->getPlayerTwo()->getScore() << '\n';
+
+        // Centre factory
+        std::vector<Tile::Colour>& centreFactory = gameBoard->getCentreFactory();
+        for(int i = 0; i < (int) centreFactory.size(); ++i) {
+            saveFile << Tile::getTileColourAsString(centreFactory[i]);
+        }
+        saveFile << '\n';
+
+        // Factories
+        for(int row_num = 0; row_num < DIM; ++row_num) {
+            for(int col_num = 0; col_num < FACTORY_WIDTH; ++col_num) {
+                if(gameBoard->getFactoryTile(row_num, col_num) != Tile::NoTile) {
+                    saveFile << Tile::getTileColourAsString(gameBoard->getFactoryTile(row_num, col_num));
+                } 
+            }
+            saveFile << '\n';
+        }
+
+        // Player 1
+        // storage
+        for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
+            for(int col_num = row_num; col_num >= 0; --col_num) {
+                saveFile << Tile::getTileColourAsString(*gameBoard->getPlayerOne()->getStorageTile(row_num, col_num));
+            }
+            saveFile << '\n';
+        }
+
+        // broken tiles
+        for(int i = 0; i < gameBoard->getPlayerOne()->getNumBrokenTiles(); ++i) {
+            saveFile << Tile::getTileColourAsString(*gameBoard->getPlayerOne()->getBrokenTile(i));
+        }
+        saveFile << '\n';
+
+        // mosaic
+        for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
+            for(int col_num = 0; col_num < ARRAY_DIM; ++col_num) {
+                saveFile << *gameBoard->getPlayerOne()->getMosaicTile(row_num, col_num);
+            }
+        }
+        saveFile << '\n';
+
+        // Player 2
+        // storage
+        for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
+            for(int col_num = row_num; col_num >= 0; --col_num) {
+                saveFile << Tile::getTileColourAsString(*gameBoard->getPlayerTwo()->getStorageTile(row_num, col_num));
+            }
+            saveFile << '\n';
+        }
+
+        // broken tiles
+        for(int i = 0; i < gameBoard->getPlayerTwo()->getNumBrokenTiles(); ++i) {
+            saveFile << Tile::getTileColourAsString(*gameBoard->getPlayerTwo()->getBrokenTile(i));
+        }
+        saveFile << '\n';
+
+        // mosaic
+        for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
+            for(int col_num = 0; col_num < ARRAY_DIM; ++col_num) {
+                saveFile << *gameBoard->getPlayerTwo()->getMosaicTile(row_num, col_num);
+            }
+        }
+        saveFile << '\n';
+
+        // Box lid and tile bag
+        saveFile << gameBoard->getBoxLid()->getAllTilesAsString() << '\n';
+        saveFile << gameBoard->getTileBag()->getAllTilesAsString() << '\n';
+
         cout << "Game successfully saved to '" << fileName << "'" << endl;
     }
-
-    if(gameBoard->getCurrentPlayer() == gameBoard->getPlayerOne()) {
-        saveFile << "true" << '\n';
-    } else {
-        saveFile << "false" << '\n';
-    }
-
-    saveFile << gameBoard->getPlayerOne()->getPlayerName() << '\n';
-    saveFile << gameBoard->getPlayerOne()->getScore() << '\n';
-
-    saveFile << gameBoard->getPlayerTwo()->getPlayerName() << '\n';
-    saveFile << gameBoard->getPlayerTwo()->getScore() << '\n';
-
-    std::vector<Tile::Colour>& centreFactory = gameBoard->getCentreFactory();
-    for(int i = 0; i < (int) centreFactory.size(); ++i) {
-        saveFile << Tile::getTileColourAsString(centreFactory[i]);
-    }
-    saveFile << '\n';
-
-    for(int row_num = 0; row_num < DIM; ++row_num) {
-        for(int col_num = 0; col_num < FACTORY_WIDTH; ++col_num) {
-            saveFile << Tile::getTileColourAsString(gameBoard->getFactoryTile(row_num, col_num));
-        }
-        saveFile << '\n';
-    }
-
-    // Player 1
-    for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
-        for(int col_num = row_num; col_num >= 0; --col_num) {
-            saveFile << Tile::getTileColourAsString(*gameBoard->getPlayerOne()->getStorageTile(row_num, col_num));
-        }
-        saveFile << '\n';
-    }
-
-    for(int i = 0; i < gameBoard->getPlayerOne()->getNumBrokenTiles(); ++i) {
-        saveFile << Tile::getTileColourAsString(*gameBoard->getPlayerOne()->getBrokenTile(i));
-    }
-    saveFile << '\n';
-
-    for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
-        for(int col_num = 0; col_num < ARRAY_DIM; ++col_num) {
-            saveFile << gameBoard->getPlayerOne()->getMosaicTile(row_num, col_num);
-        }
-    }
-    saveFile << '\n';
-
-    // Player 2
-    for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
-        for(int col_num = row_num; col_num >= 0; --col_num) {
-            saveFile << Tile::getTileColourAsString(*gameBoard->getPlayerTwo()->getStorageTile(row_num, col_num));
-        }
-        saveFile << '\n';
-    }
-
-    for(int i = 0; i < gameBoard->getPlayerTwo()->getNumBrokenTiles(); ++i) {
-        saveFile << Tile::getTileColourAsString(*gameBoard->getPlayerTwo()->getBrokenTile(i));
-    }
-    saveFile << '\n';
-
-    for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
-        for(int col_num = 0; col_num < ARRAY_DIM; ++col_num) {
-            saveFile << gameBoard->getPlayerTwo()->getMosaicTile(row_num,col_num);
-        }
-    }
-    saveFile << '\n';
-
-
 
     saveFile.close();
 }
