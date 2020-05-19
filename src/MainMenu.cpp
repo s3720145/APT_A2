@@ -70,7 +70,9 @@ void MainMenu::newGame(int seed) {
     
     // Need to do end of game condition for every new round
     // DO LOOP HERE AND END GAME CONDITION
-    newRound(gameBoard);
+    while(gameBoard->getPlayerOne()->hasFullRow() == false || gameBoard->getPlayerTwo()->hasFullRow() == false) {
+        newRound(gameBoard);
+    }
 
     // Delete GameBoard
     delete gameBoard;

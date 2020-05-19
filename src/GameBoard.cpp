@@ -16,7 +16,7 @@ GameBoard::GameBoard(std::string playerOneName, std::string playerTwoName, int s
     // Fill the tile bag
     initialiseTileBag(seed);
 
-    // Put tiles into the factoris and set up centre factory
+    // Put tiles into the factories and set up centre factory
     initialiseFactories();
 }
 

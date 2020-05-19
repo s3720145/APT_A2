@@ -31,7 +31,7 @@ public:
     // Returns playerName.
     string getPlayerName() const;
 
-    void setScore(const int score);
+    void setScore(const int totalScore);
 
     int getScore() const;
 
@@ -96,10 +96,14 @@ public:
 
     void insertIntoBrokenTiles(Tile::Colour tile);
 
+    bool hasFullRow();
+
 private:
     string playerName;
 
-    int score;
+    int totalScore;
+
+    int roundScore;
 
     // Keeps track of the number of broken tiles
     int numBrokenTiles;

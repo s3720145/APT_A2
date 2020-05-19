@@ -9,7 +9,7 @@ using std::cout;
 // Default constructor
 Player::Player(string playerName, int score) {
     this->playerName = playerName;
-    this->score = score;
+    this->totalScore = score;
     initialiseStructures();
 }
 
@@ -57,12 +57,12 @@ string Player::getPlayerName() const {
     return playerName;
 }
 
-void Player::setScore(const int score) {
-    this->score = score;
+void Player::setScore(const int totalScore) {
+    this->totalScore = totalScore;
 }
 
 int Player::getScore() const {
-    return score;
+    return totalScore;
 }
 
 void Player::setStorage(string inputStorage) {
@@ -169,12 +169,51 @@ void Player::printPlayerBoard() const {
         cout << getTileColourAsString(brokenTiles[i]);
     }
     cout << std::endl;
+
+    cout << "Score this round: " << roundScore << std::endl;
 }
 
+// Also calculates score
 void Player::insertIntoMosaic(const int row_num, const Tile::Colour tile) {
-    for(int i = 0; i < ARRAY_DIM; ++i) {
-        if(tolower(getTileColourAsString(tile)) == mosaic[row_num][i]) {
-            mosaic[row_num][i] = toupper(mosaic[row_num][i]);
+    for(int col_num = 0; col_num < ARRAY_DIM; ++col_num) {
+        if(tolower(getTileColourAsString(tile)) == mosaic[row_num][col_num]) {
+            mosaic[row_num][col_num] = toupper(mosaic[row_num][col_num]);
+            int insertionScore = 1;
+
+            int modifier = 1;
+            // check right
+            while(getMosaicTile(row_num, col_num + modifier) != nullptr && 
+            isupper(mosaic[row_num][col_num + modifier]) == true) {
+                ++modifier;
+                ++insertionScore;
+            }
+
+            modifier = -1;
+            // check left
+            while(getMosaicTile(row_num, col_num + modifier) != nullptr && 
+            isupper(mosaic[row_num][col_num + modifier]) == true) {
+                --modifier;
+                ++insertionScore;
+            }
+            
+            modifier = 1;
+            // check up
+            while(getMosaicTile(row_num + modifier, col_num) != nullptr && 
+            isupper(mosaic[row_num + modifier][col_num]) == true) {
+                ++modifier;
+                ++insertionScore;
+            }
+
+            modifier = -1;
+            // check down
+            while(getMosaicTile(row_num + modifier, col_num) != nullptr && 
+            isupper(mosaic[row_num + modifier][col_num]) == true) {
+                --modifier;
+                ++insertionScore;
+            }
+
+            cout << insertionScore;
+            roundScore += insertionScore;
         }
     }
 }
@@ -282,4 +321,21 @@ void Player::insertIntoBrokenTiles(Tile::Colour tile) {
 
     brokenTiles[numBrokenTiles] = tile;
     ++numBrokenTiles;
+}
+
+bool Player::hasFullRow() {
+    bool hasFullRow = false;
+    bool breakLoop = false;
+
+    // for each row in mosaic. breaks loop if full row is found
+    for(int row_num = 0; row_num < ARRAY_DIM && breakLoop == false; ++row_num) {
+        for(int col_num = 0; col_num < ARRAY_DIM && isupper(mosaic[row_num][col_num]) == true; ++col_num) {
+            if(col_num == ARRAY_DIM - 1) {
+                hasFullRow = true;
+                breakLoop = true;
+            }
+        }
+    }
+
+    return hasFullRow;
 }
