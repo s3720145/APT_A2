@@ -70,3 +70,15 @@ Node* LinkedList::dequeue() {
 Node* LinkedList::getHeader() {
     return this->head;
 }
+
+string LinkedList::getAllTilesAsString() {
+    string tiles;
+    Node* currentNode = head;
+
+    while (currentNode != nullptr) {
+        tiles += Tile::getTileColourAsString(currentNode->getTileColour());
+        currentNode = currentNode->getNextNode();
+    }
+
+    return tiles;
+}

@@ -51,7 +51,8 @@ void GameBoard::initialiseTileBag(int seed) {
 
     for (int i = 0; i < BAG_SIZE; i++) {
         // seed the engine
-        std::default_random_engine engine(++seed);
+        //std::default_random_engine engine(++seed);
+        std::mt19937 engine(++seed);
         //establish the range of values that the enum can be
         std::uniform_int_distribution<int> range(0, 4);
         
@@ -91,10 +92,9 @@ void GameBoard::initialiseTileBag(int seed) {
             }
             blackCounter++;
         }
-
+        
         tileBag->addBack(randomTile);
     }
-    
 }
 
 void GameBoard::initialiseFactories() {
@@ -105,8 +105,18 @@ void GameBoard::initialiseFactories() {
     for (int i = 0; i < DIM; i++) {
 
         for (int j = 0; j < FACTORY_WIDTH; j++) {
-            Tile::Colour tile = tileBag->dequeue()->getTileColour();
-            factories[i][j] = tile;
+            // IF the tile bag is out of tiles, take all tiles from box lid and place into tile bag
+            try {
+                Tile::Colour tile = tileBag->dequeue()->getTileColour();
+                factories[i][j] = tile;
+            } catch(...) {
+                for(int i = 0; i < boxLid->size(); ++i) {
+                    tileBag->addBack(boxLid->dequeue()->getTileColour());
+                }
+                // tile bag is refilled
+                Tile::Colour tile = tileBag->dequeue()->getTileColour();
+                factories[i][j] = tile;
+            }
         }
 
     }

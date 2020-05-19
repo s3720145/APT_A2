@@ -23,7 +23,7 @@ private:
     bool isEndOfRound(GameBoard* gameBoard);
 
     // Saves a game
-    void saveGame(string fileName);
+    void saveGame(string fileName, GameBoard* gameBoard);
 
     // Resumes a game from a save file
     void loadGame();
@@ -43,7 +43,7 @@ private:
     string playerInput();
 
     // Argument Error check
-    bool userTurnErrorCheck(string userTurn, std::vector<string>& userTurnArray);
+    bool userTurnErrorCheck(string userTurn, std::vector<string>& userTurnArray, GameBoard* gameBoard);
 };
 
 #endif // MAIN_MENU_H

@@ -2,6 +2,9 @@
 #define LINKEDLIST
 
 #include "Node.h"
+#include <string>
+
+using std::string;
 
 class LinkedList {
 public:
@@ -12,6 +15,7 @@ public:
     void addBack(Tile::Colour colour);
     Node* dequeue();
     Node* getHeader();
+    string getAllTilesAsString();
 private:
     Node* head;
 };
