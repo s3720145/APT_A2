@@ -134,7 +134,9 @@ void MainMenu::currentPlayerTurn(GameBoard* gameBoard) {
         // Get commands
         int factory = std::stoi(userTurnArray.at(1))-1;
         string tileColour = userTurnArray.at(2);
-        storageRow = std::stoi(userTurnArray.at(3));
+        if (userTurnArray.at(3) != "b") {
+            storageRow = std::stoi(userTurnArray.at(3));
+        }
 
         // Get tile/s from centre factory
         if (factory == -1) {
@@ -162,11 +164,58 @@ void MainMenu::currentPlayerTurn(GameBoard* gameBoard) {
             cout << "Can't choose the centre factory on the first turn" << endl;
             userTurnArray.clear();
             chosenTiles.clear();
-        } // Null check
+        }   // Null check
         else if (chosenTiles.empty()) {
             cout << "No Tiles match your option. Try Again" << endl;
             userTurnArray.clear();
-        } // Check first element for rule check
+        }   // Check if need to insert into broken tiles
+        else if (storageRow == 0) {
+            size_t numberOfSpaces = 7-gameBoard->getCurrentPlayer()->getNumBrokenTiles();
+            if (chosenTiles.size() < numberOfSpaces) {
+                // Adjust the factories to reflect the valid move
+                if (factory == -1) {
+                    // Check if first element is first player
+                    if (gameBoard->getCentreFactory().front() == Tile::FirstPlayer) {
+                        // Insert into broken tiles
+                        gameBoard->getCurrentPlayer()->insertIntoBrokenTiles(Tile::FirstPlayer);
+                        gameBoard->getCentreFactory().erase(gameBoard->getCentreFactory().begin());
+                    }
+                    for (int i = 0; i < (int) gameBoard->getCentreFactory().size(); i++) {
+                        Tile::Colour currentTile = gameBoard->getCentreFactory()[i];
+                        if (Tile::getTileColourAsString(currentTile) == tileColour[0]) {
+                            gameBoard->getCentreFactory()[i] = Tile::NoTile;
+                        }
+                        
+                    }
+                    
+                    cout << endl;
+                }
+                else {
+                    for (int j = 0; j < FACTORY_WIDTH; j++) {
+                        Tile::Colour currentTile = gameBoard->getFactoryTile(factory, j);
+                        
+                        if (Tile::getTileColourAsString(currentTile) == tileColour[0]) {
+                            // set to no tile in factory 
+                            gameBoard->setFactoryTile(Tile::NoTile, factory, j);
+                        }
+                        else {
+                            // Add to centre factory
+                            gameBoard->getCentreFactory().push_back(currentTile);
+                            // set to no tile in factory 
+                            gameBoard->setFactoryTile(Tile::NoTile, factory, j);
+                        }
+                    }
+                }
+                // No game rules violated
+                turnIsValid = true;
+                cout << "Turn successful" << endl;
+            }
+            else {
+                cout << "Broken tiles are full. Try again" << endl;
+                userTurnArray.clear();
+                chosenTiles.clear();
+            }
+        }   // Check first element for rule check
         else if (gameBoard->getCurrentPlayer()->insertIntoStorage(storageRow, chosenTiles.front())) {
             // Removed from temporary vector
             chosenTiles.pop_back();
@@ -333,6 +382,14 @@ bool MainMenu::userTurnErrorCheck(string userTurn, std::vector<string>& userTurn
             userTurnArray.clear();
             cout << "You must enter the 'turn' command" << endl;
             cin.clear();
+        }
+        else if (factoryIsAnInt == true && storageIsAnInt == false) {
+            if (storageRow != "b") {
+                noErrors = false;
+                userTurnArray.clear();
+                cout << "You must enter an integer between 1 and 5" << endl;
+                cin.clear();
+            }
         }
         else if (factoryIsAnInt == false || storageIsAnInt == false) {
             noErrors = false;
