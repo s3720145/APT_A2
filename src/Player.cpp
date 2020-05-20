@@ -147,6 +147,8 @@ int Player::getNumBrokenTiles() {
 }
 
 void Player::printPlayerBoard() const {
+    cout << "Player: " << playerName << std::endl;
+
     for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
         cout << row_num + 1 << ':';
         // Prints the storage rows
@@ -171,6 +173,7 @@ void Player::printPlayerBoard() const {
     cout << std::endl;
 
     cout << "Score this round: " << roundScore << std::endl;
+    cout << "Total score: " << totalScore << std::endl;
 }
 
 // Also calculates score
@@ -212,7 +215,6 @@ void Player::insertIntoMosaic(const int row_num, const Tile::Colour tile) {
                 ++insertionScore;
             }
 
-            cout << insertionScore;
             roundScore += insertionScore;
         }
     }
@@ -271,10 +273,10 @@ bool Player::insertIntoStorage(int row_num, const Tile::Colour tile) {
                 breakLoop = true;
             }
 
-            // IF we cannot insert a tile because all rows are full, insert into broken tile array
-            if(col_num == row_num - 1 && breakLoop == false) {
-                insertIntoBrokenTiles(tile);
-            }
+            // // IF we cannot insert a tile because all rows are full, insert into broken tile array
+            // if(col_num == row_num - 1 && breakLoop == false) {
+            //     insertIntoBrokenTiles(tile);
+            // }
         }
     }
 
@@ -305,6 +307,9 @@ void Player::clearStorageRows(LinkedList& boxLid) {
         brokenTiles[i] = Tile::NoTile;
         numBrokenTiles = 0;
     }
+
+    roundScore -= getPointPenalty();
+    totalScore += roundScore;
 }
 
 // MUST OPTIMISE
