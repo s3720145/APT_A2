@@ -74,6 +74,20 @@ void MainMenu::newGame(int seed) {
         newRound(gameBoard);
     }
 
+    cout << "=== Game End ===" << endl;
+    cout << "Player: " << gameBoard->getPlayerOne()->getPlayerName() <<
+    "  " << gameBoard->getPlayerOne()->getScore() << "\n\n";
+    cout << "Player: " << gameBoard->getPlayerTwo()->getPlayerName() <<
+    "  " << gameBoard->getPlayerTwo()->getScore() << "\n\n";
+
+    if(gameBoard->getPlayerOne()->getScore() > gameBoard->getPlayerTwo()->getScore()) {
+        cout << gameBoard->getPlayerOne()->getPlayerName() << " WINS!!!" << "\n\n";
+    } else if(gameBoard->getPlayerTwo()->getScore() > gameBoard->getPlayerOne()->getScore()) {
+        cout << gameBoard->getPlayerTwo()->getPlayerName() << " WINS!!!" << "\n\n";
+    } else {
+        cout << "WE HAVE A DRAW!!!" << "\n\n";
+    }
+
     // Delete GameBoard
     delete gameBoard;
 }
@@ -608,6 +622,89 @@ void MainMenu::saveGame(string fileName, GameBoard* gameBoard) {
 
 void MainMenu::loadGame() {
     // TODO
+    string fileName;
+    cout << "Enter a filename to load a game: " << endl;
+    cout << "> ";
+    cin >> std::ws >> fileName;
+
+    std::ifstream fileload("src/saveFiles/" + fileName + ".txt");
+
+    // If file does not exist
+    if(!fileload.is_open()) {
+        cout << "File not Exist " <<"’" << fileName <<"’" <<endl;
+        quit();
+    }
+    
+    string currentPlayerTurn;
+    getline(fileload, currentPlayerTurn);
+    cout << currentPlayerTurn <<endl;
+
+    string playerOneName;
+    getline(fileload, playerOneName);
+    cout << playerOneName <<endl;
+
+    string playerOnePoints;
+    getline(fileload, playerOnePoints);
+    std::stoi(playerOnePoints);
+    cout << playerOnePoints <<endl;
+        
+    string playerTwoName;
+    getline(fileload, playerTwoName);
+    cout << playerTwoName <<endl;
+    
+    string playerTwoPoints;
+    getline(fileload, playerTwoPoints);
+    std::stoi(playerTwoPoints);
+    cout << playerTwoPoints <<endl;
+    
+    Player* playerOne = new Player(playerOneName, std::stoi(playerOnePoints));
+    playerOne->getPlayerName();
+
+    std::vector<Tile::Colour> centreFactory;
+    string centreFactoryString;
+
+    getline(fileload, centreFactoryString);
+    cout << centreFactoryString << endl;
+
+    for(int i = 0; i < ARRAY_DIM; ++i) {
+        string factoryString;
+        getline(fileload, factoryString);
+        cout << factoryString << endl;
+    }
+
+    string combinedStrInput;
+    for(int i = 0; i < ARRAY_DIM; ++i) {
+        string storageRowInput;
+        getline(fileload, storageRowInput);
+        cout << storageRowInput << endl;
+        combinedStrInput.append(storageRowInput);
+    }
+    
+    string brokenTiles;
+    getline(fileload, brokenTiles);
+    cout << brokenTiles << endl;
+
+    string mosaic;
+    getline(fileload, mosaic);
+    cout << mosaic << endl;
+
+    for(int i = 0; i < ARRAY_DIM; ++i) {
+        string storageRowInput;
+        getline(fileload, storageRowInput);
+        cout << storageRowInput << endl;
+        combinedStrInput.append(storageRowInput);
+    }
+    cout << combinedStrInput << endl;
+
+    getline(fileload, brokenTiles);
+    cout << brokenTiles << endl;
+
+    getline(fileload, mosaic);
+    cout << mosaic << endl;
+
+    cin.ignore();
+
+    fileload.close();
 }
 
 void MainMenu::showCredits(int seed) {

@@ -8,8 +8,8 @@ GameBoard::GameBoard(std::string playerOneName, std::string playerTwoName, int s
     boxLid = new LinkedList();
 
     // Initialise player mosaics
-    playerOne = new Player(playerOneName, 1);
-    playerTwo = new Player(playerTwoName, 2);
+    playerOne = new Player(playerOneName, 0);
+    playerTwo = new Player(playerTwoName, 0);
 
     // Set player one to current player
     currentPlayer = playerOne;
