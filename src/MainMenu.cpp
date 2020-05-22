@@ -145,6 +145,7 @@ void MainMenu::currentPlayerTurn(GameBoard* gameBoard) {
             userTurn = playerInput();
         } while (!(userTurnErrorCheck(userTurn, userTurnArray, gameBoard)));
         
+        storageRow = 0;
         // Get commands
         int factory = std::stoi(userTurnArray.at(1))-1;
         string tileColour = userTurnArray.at(2);
@@ -528,8 +529,8 @@ void MainMenu::printCurrentPlayerMozaic(GameBoard* gameBoard) {
 
 // MAKE IMPROVEMENTS
 void MainMenu::saveGame(string fileName, GameBoard* gameBoard) {
-    std::ofstream saveFile("src/saveFiles/" + fileName + ".txt");
-
+    std::ofstream saveFile("src/saveFiles/" + fileName);
+    
     if(saveFile.fail()) {
         cout << "File not found";
     } else {
@@ -550,7 +551,9 @@ void MainMenu::saveGame(string fileName, GameBoard* gameBoard) {
         // Centre factory
         std::vector<Tile::Colour>& centreFactory = gameBoard->getCentreFactory();
         for(int i = 0; i < (int) centreFactory.size(); ++i) {
-            saveFile << Tile::getTileColourAsString(centreFactory[i]);
+            if (centreFactory[i] != Tile::NoTile) {
+                saveFile << Tile::getTileColourAsString(centreFactory[i]);
+            }
         }
         saveFile << '\n';
 
@@ -626,7 +629,7 @@ void MainMenu::loadGame() {
     cout << "> ";
     cin >> std::ws >> fileName;
  
-    std::ifstream fileload("src/saveFiles/" + fileName + ".txt");
+    std::ifstream fileload("src/saveFiles/" + fileName);
  
     // If file does not exist
     if(!fileload.is_open()) {
