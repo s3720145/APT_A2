@@ -233,9 +233,9 @@ bool Player::insertIntoStorage(int row_num, const Tile::Colour tile) {
             }
 
             // IF we cannot insert a tile because all rows are full, insert into broken tile array
-            if(col_num == row_num - 1 && breakLoop == false) {
-                insertIntoBrokenTiles(tile);
-            }
+            // if(col_num == row_num - 1 && breakLoop == false) {
+            //     insertIntoBrokenTiles(tile);
+            // }
         }
     }
 
@@ -282,4 +282,21 @@ void Player::insertIntoBrokenTiles(Tile::Colour tile) {
 
     brokenTiles[numBrokenTiles] = tile;
     ++numBrokenTiles;
+}
+
+bool Player::hasFullRow() {
+    bool hasFullRow = false;
+    bool breakLoop = false;
+ 
+    // for each row in mosaic. breaks loop if full row is found
+    for(int row_num = 0; row_num < ARRAY_DIM && breakLoop == false; ++row_num) {
+        for(int col_num = 0; col_num < ARRAY_DIM && isupper(mosaic[row_num][col_num]) == true; ++col_num) {
+            if(col_num == ARRAY_DIM - 1) {
+                hasFullRow = true;
+                breakLoop = true;
+            }
+        }
+    }
+ 
+    return hasFullRow;
 }

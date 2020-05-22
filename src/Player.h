@@ -95,6 +95,7 @@ public:
     void clearStorageRows(LinkedList& boxLid);
 
     void insertIntoBrokenTiles(Tile::Colour tile);
+    bool hasFullRow();
 
 private:
     string playerName;

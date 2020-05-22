@@ -6,7 +6,7 @@ GameBoard::GameBoard(std::string playerOneName, std::string playerTwoName, int s
     // Initialise data structure
     tileBag = new LinkedList();
     boxLid = new LinkedList();
-
+    
     // Initialise player mosaics
     playerOne = new Player(playerOneName, 1);
     playerTwo = new Player(playerTwoName, 2);
@@ -21,7 +21,6 @@ GameBoard::GameBoard(std::string playerOneName, std::string playerTwoName, int s
 }
 
 GameBoard::GameBoard(std::vector<Tile::Colour> centreFactory) {
-    // set the current player
     
     // Initialise data structure
     tileBag = new LinkedList();
@@ -38,6 +37,9 @@ GameBoard::~GameBoard() {
     delete tileBag;
     delete boxLid;
 }
+//void GameBoard::setPlayerone(Player* playerOne) {
+   // this->playerOne = playerOne;
+//}
 
 void GameBoard::initialiseTileBag(int seed) {
     Tile::Colour colourArray[] = {Tile::Red, Tile::Yellow, Tile::DarkBlue, 
@@ -51,8 +53,8 @@ void GameBoard::initialiseTileBag(int seed) {
 
     for (int i = 0; i < BAG_SIZE; i++) {
         // seed the engine
-        //std::default_random_engine engine(++seed);
         std::mt19937 engine(++seed);
+        //std::default_random_engine engine(++seed);
         //establish the range of values that the enum can be
         std::uniform_int_distribution<int> range(0, 4);
         
@@ -92,9 +94,10 @@ void GameBoard::initialiseTileBag(int seed) {
             }
             blackCounter++;
         }
-        
+
         tileBag->addBack(randomTile);
     }
+    
 }
 
 void GameBoard::initialiseFactories() {
@@ -181,3 +184,15 @@ Player* GameBoard::getPlayerOne() {
 Player* GameBoard::getPlayerTwo() {
     return this->playerTwo;
 }
+
+void GameBoard::setPlayerOne(Player* playerOne) {
+    this->playerOne = playerOne;
+}
+
+void GameBoard::setPlayerTwo(Player* playerTwo) {
+    this->playerTwo = playerTwo;
+}
+void GameBoard::setCurrentPlayer(Player* currentPlayer){
+    this->currentPlayer = currentPlayer;
+}
+

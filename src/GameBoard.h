@@ -31,6 +31,9 @@ public:
     void setFactoryTile(Tile::Colour tile, int row, int column);
     void setTileBagElement(Tile::Colour tile);
     void setBoxLidElement(Tile::Colour tile);
+    void setPlayerOne(Player* playerOne);
+    void setPlayerTwo(Player* playerTwo);
+    void setCurrentPlayer(Player* currentPlayer);
     void initialiseFactories();
     
 private:
