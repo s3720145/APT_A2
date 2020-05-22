@@ -100,8 +100,8 @@ void GameBoard::initialiseFactories() {
     // Add first player tile to the centre factory
     centreFactory.push_back(Tile::FirstPlayer);
 
-    // Check if boxlid has any tiles and if it does transfer it to tilebag
-    if (boxLid->getHeader() != nullptr) {
+    // Check if tilebag has any tiles and if it doesn't transfer from boxlid
+    if (tileBag->getHeader() != nullptr) {
         for(int i = 0; i < boxLid->size(); ++i) {
             tileBag->addBack(boxLid->dequeue()->getTileColour());
         }

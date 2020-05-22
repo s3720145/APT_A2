@@ -395,7 +395,7 @@ bool MainMenu::userTurnErrorCheck(string userTurn, std::vector<string>& userTurn
         if (command != "turn") {
             noErrors = false;
             userTurnArray.clear();
-            cout << "You must enter the 'turn' command" << endl;
+            cout << "You must enter the 'turn' or 'save' command" << endl;
             cin.clear();
         }
         else if (factoryIsAnInt == true && storageIsAnInt == false) {
@@ -739,6 +739,16 @@ void MainMenu::loadGame() {
         } else if(currentPlayerTurn == "false"){
             gameBoard->setCurrentPlayer(gameBoard->getPlayerTwo());
         }
+        // set gameboard box lid 
+        string boxLidStr;
+        getline(fileload, boxLidStr);
+
+        stringCounter = 0;
+        for(int row_num = 0; row_num < (int) boxLidStr.length(); ++row_num) {
+            int tileInt = (int) boxLidStr[stringCounter];
+            gameBoard->setBoxLidElement((Tile::Colour) tileInt);
+            ++stringCounter;
+        }
 
         // set gameboard tilebag
         string tileBagStr;
@@ -750,18 +760,6 @@ void MainMenu::loadGame() {
             gameBoard->setTileBagElement((Tile::Colour) tileInt);
             ++stringCounter; 
         }
-
-        // set gameboard box lid 
-        string boxLidStr;
-        getline(fileload, boxLidStr);
-
-        stringCounter = 0;
-        for(int row_num = 0; row_num < (int) boxLidStr.length(); ++row_num) {
-            int tileInt = (int) boxLidStr[stringCounter];
-            gameBoard->setBoxLidElement((Tile::Colour) tileInt);
-            ++stringCounter;
-        }
-        
     }
     catch(...) {
         std::cerr << "File load corrupted" << '\n';
