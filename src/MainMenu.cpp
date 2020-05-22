@@ -68,8 +68,7 @@ void MainMenu::newGame(int seed) {
     Player* playerTwo = gameBoard->getPlayerTwo();
     // Need to do end of game condition for every new round
     // DO LOOP HERE AND END GAME CONDITION
-    while( playerOne->hasFullRow() == false || 
-            playerTwo->hasFullRow() == false) {
+    while(playerOne->hasFullRow() == false && playerTwo->hasFullRow() == false) {
         newRound(gameBoard);
     }
 
@@ -791,7 +790,7 @@ void MainMenu::loadGame() {
     
     fileload.close();
 
-    while(playerOne->hasFullRow() == false || playerTwo->hasFullRow() == false) {
+    while(playerOne->hasFullRow() == false && playerTwo->hasFullRow() == false) {
         newRound(gameBoard);
     }
 
