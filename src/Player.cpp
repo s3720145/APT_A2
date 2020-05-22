@@ -186,33 +186,33 @@ void Player::insertIntoMosaic(const int row_num, const Tile::Colour tile) {
 
             int modifier = 1;
             // check right
-            while(getMosaicTile(row_num, col_num + modifier) != nullptr && 
-            isupper(mosaic[row_num][col_num + modifier]) == true) {
+            while(col_num + modifier <= ARRAY_DIM - 1 && 
+            isupper(mosaic[row_num][col_num + modifier])) {
                 ++modifier;
                 ++insertionScore;
             }
 
-            modifier = -1;
+            modifier = 1;
             // check left
-            while(getMosaicTile(row_num, col_num + modifier) != nullptr && 
-            isupper(mosaic[row_num][col_num + modifier]) == true) {
+            while(col_num - modifier >= 0 && 
+            isupper(mosaic[row_num][col_num - modifier])) {
                 --modifier;
                 ++insertionScore;
             }
             
             modifier = 1;
             // check up
-            while(getMosaicTile(row_num + modifier, col_num) != nullptr && 
-            isupper(mosaic[row_num + modifier][col_num]) == true) {
-                ++modifier;
+            while(row_num - modifier >= 0 && 
+            isupper(mosaic[row_num - modifier][col_num])) {
+                --modifier;
                 ++insertionScore;
             }
 
-            modifier = -1;
+            modifier = 1;
             // check down
-            while(getMosaicTile(row_num + modifier, col_num) != nullptr && 
-            isupper(mosaic[row_num + modifier][col_num]) == true) {
-                --modifier;
+            while(row_num + modifier <= ARRAY_DIM - 1 && 
+            isupper(mosaic[row_num + modifier][col_num])) {
+                ++modifier;
                 ++insertionScore;
             }
 
@@ -225,27 +225,10 @@ bool Player::isInMosaicRow(const int row_num, Tile::Colour tile) {
     bool isInMosaic = false;
     
     for(int i = 0; i < ARRAY_DIM; ++i) {
-        // int tileInt = (int) mosaic[row_num][i];
-        // Tile::Colour mosaicTile = (Tile::Colour) tileInt;
         if(mosaic[row_num][i] == getTileColourAsString(tile)) {
-            std::cout << mosaic[row_num][i] << getTileColourAsString(tile) << std::endl;
             isInMosaic = true;
-            cout << (isInMosaic ? "true" : "false");
         }
     }
-    
-    // Tile::Colour colourArray[] = {Tile::Red, Tile::Yellow, Tile::DarkBlue, 
-    //     Tile::LightBlue, Tile::Black};
-        
-    // for(int i = 0; i < ARRAY_DIM; ++i) {
-    //     int tileInt = (int) mosaic[row_num][i];
-    //     // Check if it matches current enums
-    //     for (Tile::Colour tile: colourArray) {
-    //         if (tileInt == tile) {
-    //             isInMosaic = true;
-    //         }
-    //     }
-    // }
 
     return std::move(isInMosaic);
 }
@@ -297,29 +280,23 @@ void Player::clearStorageRows(LinkedList& boxLid) {
         }
     }
 
-    // resets broken tile array
-    for(int i = 0; i < numBrokenTiles; ++i) {
-        boxLid.addBack(brokenTiles[i]);
-        brokenTiles[i] = Tile::NoTile;
-        numBrokenTiles = 0;
-    }
-
     roundScore -= getPointPenalty();
     totalScore += roundScore;
+    if(totalScore < 0) {
+        totalScore = 0;
+    }
+
+    // resets broken tile array
+    for(int i = 0; i < numBrokenTiles; ++i) {
+        if(brokenTiles[i] != Tile::FirstPlayer) {
+            boxLid.addBack(brokenTiles[i]);
+        }
+        brokenTiles[i] = Tile::NoTile;
+    }
+    numBrokenTiles = 0;
 }
 
-// MUST OPTIMISE
 void Player::insertIntoBrokenTiles(Tile::Colour tile) {
-    // bool insertSuccess = false;
-    // int index = 0;
-
-    // while(brokenTiles[index] != Tile::NoTile && index < MAX_BROKEN_TILES) ++index;
-
-    // if(index < MAX_BROKEN_TILES) {
-    //     brokenTiles[index] = tile;
-    //     insertSuccess = true;
-    // } 
-
     brokenTiles[numBrokenTiles] = tile;
     ++numBrokenTiles;
 }
