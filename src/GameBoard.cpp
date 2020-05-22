@@ -21,7 +21,6 @@ GameBoard::GameBoard(std::string playerOneName, std::string playerTwoName, int s
 }
 
 GameBoard::GameBoard(std::vector<Tile::Colour> centreFactory) {
-    // set the current player
     
     // Initialise data structure
     tileBag = new LinkedList();
@@ -101,22 +100,18 @@ void GameBoard::initialiseFactories() {
     // Add first player tile to the centre factory
     centreFactory.push_back(Tile::FirstPlayer);
 
+    // Check if boxlid has any tiles and if it does transfer it to tilebag
+    if (boxLid->getHeader() != nullptr) {
+        for(int i = 0; i < boxLid->size(); ++i) {
+            tileBag->addBack(boxLid->dequeue()->getTileColour());
+        }
+    }
+
     // Add tiles from the tile bag to the factories
     for (int i = 0; i < DIM; i++) {
-
         for (int j = 0; j < FACTORY_WIDTH; j++) {
-            // IF the tile bag is out of tiles, take all tiles from box lid and place into tile bag
-            try {
-                Tile::Colour tile = tileBag->dequeue()->getTileColour();
-                factories[i][j] = tile;
-            } catch(...) {
-                for(int i = 0; i < boxLid->size(); ++i) {
-                    tileBag->addBack(boxLid->dequeue()->getTileColour());
-                }
-                // tile bag is refilled
-                Tile::Colour tile = tileBag->dequeue()->getTileColour();
-                factories[i][j] = tile;
-            }
+            Tile::Colour tile = tileBag->dequeue()->getTileColour();
+            factories[i][j] = tile;
         }
 
     }
@@ -124,6 +119,22 @@ void GameBoard::initialiseFactories() {
 
 Player* GameBoard::getCurrentPlayer() {
     return this->currentPlayer;
+}
+
+void GameBoard::setFactories(string inputFactory) {
+    int stringCounter = 0;
+    for(int row_num = 0; row_num < DIM; ++row_num) {
+        for(int col_num = 0; col_num < FACTORY_WIDTH; ++col_num) {
+            
+            if (inputFactory[stringCounter] == ' ') {
+                factories[row_num][col_num] = Tile::NoTile;
+            }
+            else {
+                factories[row_num][col_num] = (Tile::Colour) inputFactory[stringCounter];
+            }
+            ++stringCounter;
+        }
+    }
 }
 
 bool GameBoard::isFirstTurn() {
@@ -180,4 +191,15 @@ Player* GameBoard::getPlayerOne() {
 
 Player* GameBoard::getPlayerTwo() {
     return this->playerTwo;
+}
+
+void GameBoard::setPlayerOne(Player* playerOne) {
+    this->playerOne = playerOne;
+}
+
+void GameBoard::setPlayerTwo(Player* playerTwo) {
+    this->playerTwo = playerTwo;
+}
+void GameBoard::setCurrentPlayer(Player* currentPlayer){
+    this->currentPlayer = currentPlayer;
 }
