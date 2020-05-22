@@ -607,7 +607,158 @@ void MainMenu::saveGame(string fileName, GameBoard* gameBoard) {
 }
 
 void MainMenu::loadGame() {
-    // TODO
+    string fileName;
+    cout << "Enter a filename to load a game: " << endl;
+    cout << "> ";
+    cin >> std::ws >> fileName;
+ 
+    std::ifstream fileload("src/saveFiles/" + fileName + ".txt");
+ 
+    // If file does not exist
+    if(!fileload.is_open()) {
+        cout << "File does not Exist " << "’" << fileName << "’"  << endl;
+        quit();
+    }
+    GameBoard* gameBoard;
+    try {
+        string currentPlayerTurn;
+        getline(fileload, currentPlayerTurn);
+
+        // Get player one name and points to create new player
+        string playerOneName;
+        getline(fileload, playerOneName);
+    
+        string playerOnePoints;
+        getline(fileload, playerOnePoints);
+        std::stoi(playerOnePoints);
+
+        Player* playerOne = new Player(playerOneName, std::stoi(playerOnePoints));
+
+        // Get player two name and points to create new player 
+        string playerTwoName;
+        getline(fileload, playerTwoName);
+        
+        string playerTwoPoints;
+        getline(fileload, playerTwoPoints);
+        
+        Player* playerTwo = new Player(playerTwoName, std::stoi(playerTwoPoints));
+
+        
+        std::vector<Tile::Colour> centreFactory;
+        string centreFactoryString;
+        getline(fileload, centreFactoryString);
+        
+        // split the string and push it into the centre factory
+        int stringCounter = 0;
+        for(int row_num = 0; row_num < (int) centreFactoryString.length(); ++row_num) {
+            
+            int tileInt = (int) centreFactoryString[stringCounter];
+            centreFactory.push_back((Tile::Colour) tileInt);
+            ++stringCounter;
+            
+        }
+        gameBoard = new GameBoard(centreFactory);
+
+        // Factoryline
+        string combinedFactoryStr;
+        for(int i = 0; i < ARRAY_DIM; ++i) {
+            string factoryString;
+            getline(fileload, factoryString);
+            if (factoryString.empty()) {
+                combinedFactoryStr.append("    ");
+            }
+            else {
+                combinedFactoryStr.append(factoryString);
+            }
+        }
+        gameBoard->setFactories(combinedFactoryStr);
+
+        // set player one storage
+        string playerOneStrInput;
+        for(int i = 0; i < ARRAY_DIM; ++i) {
+            string storageRowInput;
+            getline(fileload, storageRowInput);
+            playerOneStrInput.append(storageRowInput);
+        }
+        playerOne->setStorage(playerOneStrInput);
+        
+        // set player one broken tiles
+        string playerOneBrokenTiles;
+        getline(fileload, playerOneBrokenTiles);
+        playerOne->setBrokenTiles(playerOneBrokenTiles);
+        
+        // set player one mosaic
+        string playerOneMosaicStr;
+        getline(fileload, playerOneMosaicStr);
+        playerOne->setMosaic(playerOneMosaicStr);
+
+        // set player two storage
+        string playerTwoStrInput;
+        for(int i = 0; i < ARRAY_DIM; ++i) {
+            string storageRowInput;
+            getline(fileload, storageRowInput);
+            playerTwoStrInput.append(storageRowInput);
+        }
+        playerTwo->setStorage(playerTwoStrInput);
+        
+        // set player two broken tiles
+        string playerTwoBrokenTiles;
+        getline(fileload, playerTwoBrokenTiles);
+        playerTwo->setBrokenTiles(playerTwoBrokenTiles);
+    
+        // set player two mosaic
+        string mosaicStr1;
+        getline(fileload, mosaicStr1);
+        playerTwo->setMosaic(mosaicStr1);
+
+        // Set recently created players to gameboard
+        gameBoard->setPlayerOne(playerOne);
+        gameBoard->setPlayerTwo(playerTwo);
+
+        // Set current player turn in gameboard
+        if(currentPlayerTurn == "true") {
+            gameBoard->setCurrentPlayer(gameBoard->getPlayerOne());
+
+        } else if(currentPlayerTurn == "false"){
+            gameBoard->setCurrentPlayer(gameBoard->getPlayerTwo());
+        }
+
+        // set gameboard tilebag
+        string tileBagStr;
+        getline(fileload, tileBagStr);
+
+        stringCounter = 0;
+        for(int row_num = 0; row_num < (int) tileBagStr.length(); ++row_num) { 
+            int tileInt = (int) tileBagStr[stringCounter];
+            gameBoard->setTileBagElement((Tile::Colour) tileInt);
+            ++stringCounter; 
+        }
+
+        // set gameboard box lid 
+        string boxLidStr;
+        getline(fileload, boxLidStr);
+
+        stringCounter = 0;
+        for(int row_num = 0; row_num < (int) boxLidStr.length(); ++row_num) {
+            int tileInt = (int) boxLidStr[stringCounter];
+            gameBoard->setBoxLidElement((Tile::Colour) tileInt);
+            ++stringCounter;
+        }
+        
+    }
+    catch(...) {
+        std::cerr << "File load corrupted" << '\n';
+        quit();
+    }
+    
+    fileload.close();
+
+    while(gameBoard->getPlayerOne()->hasFullRow() == false || gameBoard->getPlayerTwo()->hasFullRow() == false) {
+        newRound(gameBoard);
+    }
+
+    // Delete GameBoard
+    delete gameBoard;
 }
 
 void MainMenu::showCredits(int seed) {

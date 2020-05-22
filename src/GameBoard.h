@@ -29,9 +29,13 @@ public:
 
     // Setter
     void setFactoryTile(Tile::Colour tile, int row, int column);
+    void setFactories(string inputFactory);
     void setTileBagElement(Tile::Colour tile);
     void setBoxLidElement(Tile::Colour tile);
     void initialiseFactories();
+    void setPlayerOne(Player* playerOne);
+    void setPlayerTwo(Player* playerTwo);
+    void setCurrentPlayer(Player* currentPlayer);
     
 private:
     /* data */
