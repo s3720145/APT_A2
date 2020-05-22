@@ -81,14 +81,16 @@ public:
      * 
      * Must discuss which class is responsible for:
      *  -IF insertion fail you must place tile in the broken section
-     *  -Cannot place tile into storage if that row already has a same colour tile in the mosaic
+     *  -Cannot place tile into storage if that row already has a same colour 
+     *   tile in the mosaic
      * 
      * row_num MUST be >= 1 and <= 5
      */
     bool insertIntoStorage(const int row_num, const Tile::Colour tile);
 
     /**
-     * Call at the end of each round for each player. Checks all storage rows if they are full.
+     * Call at the end of each round for each player. 
+     * Checks all storage rows if they are full.
      * If a storage row is full, add the last tile in the row to the mosaic
      * place the rest in the box lid. 
      */

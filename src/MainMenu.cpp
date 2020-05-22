@@ -11,10 +11,7 @@ using std::string;
 using std::endl;
 
 MainMenu::MainMenu() {
-    /**
-    PlayerTests* playerTests = new PlayerTests();
-    playerTests->~PlayerTests();
-    */
+    
 }
 
 MainMenu::~MainMenu() {
@@ -67,22 +64,25 @@ void MainMenu::newGame(int seed) {
     cout << "Let's Play" << "\n\n";
 
     GameBoard* gameBoard = new GameBoard(playerOneName, playerTwoName, seed);
-    
+    Player* playerOne = gameBoard->getPlayerOne();
+    Player* playerTwo = gameBoard->getPlayerTwo();
     // Need to do end of game condition for every new round
     // DO LOOP HERE AND END GAME CONDITION
-    while(gameBoard->getPlayerOne()->hasFullRow() == false || gameBoard->getPlayerTwo()->hasFullRow() == false) {
+    while( playerOne->hasFullRow() == false || 
+            playerTwo->hasFullRow() == false) {
         newRound(gameBoard);
     }
 
     cout << "=== Game End ===" << endl;
-    cout << "Player: " << gameBoard->getPlayerOne()->getPlayerName() <<
-    "  " << gameBoard->getPlayerOne()->getScore() << "\n\n";
-    cout << "Player: " << gameBoard->getPlayerTwo()->getPlayerName() <<
-    "  " << gameBoard->getPlayerTwo()->getScore() << "\n\n";
+    cout << "Player: " << playerOne->getPlayerName() <<
+    "  " << playerOne->getScore() << "\n\n";
+    cout << "Player: " << playerTwo->getPlayerName() <<
+    "  " << playerTwo->getScore() << "\n\n";
 
-    if(gameBoard->getPlayerOne()->getScore() > gameBoard->getPlayerTwo()->getScore()) {
+    if(playerOne->getScore() > playerTwo->getScore()) {
         cout << gameBoard->getPlayerOne()->getPlayerName() << " WINS!!!" << "\n\n";
-    } else if(gameBoard->getPlayerTwo()->getScore() > gameBoard->getPlayerOne()->getScore()) {
+    } 
+    else if(playerTwo->getScore() > playerOne->getScore()) {
         cout << gameBoard->getPlayerTwo()->getPlayerName() << " WINS!!!" << "\n\n";
     } else {
         cout << "WE HAVE A DRAW!!!" << "\n\n";
@@ -122,11 +122,15 @@ void MainMenu::newRound(GameBoard* gameBoard) {
     // Refill
     gameBoard->initialiseFactories();
     
+    // Set pointers to null
+    playerOne = nullptr;
+    playerTwo = nullptr;
     cout << endl;
 }
 
 void MainMenu::currentPlayerTurn(GameBoard* gameBoard) {
-    cout << "TURN FOR PLAYER: " << gameBoard->getCurrentPlayer()->getPlayerName();
+    Player* currentPlayer = gameBoard->getCurrentPlayer();
+    cout << "TURN FOR PLAYER: " << currentPlayer->getPlayerName();
     cout << endl;
 
     printFactories(gameBoard);
@@ -186,14 +190,14 @@ void MainMenu::currentPlayerTurn(GameBoard* gameBoard) {
             userTurnArray.clear();
         }   // Check if need to insert into broken tiles
         else if (storageRow == 0) {
-            size_t numberOfSpaces = 7-gameBoard->getCurrentPlayer()->getNumBrokenTiles();
+            size_t numberOfSpaces = 7-currentPlayer->getNumBrokenTiles();
             if (chosenTiles.size() < numberOfSpaces) {
                 // Adjust the factories to reflect the valid move
                 if (factory == -1) {
                     // Check if first element is first player
                     if (gameBoard->getCentreFactory().front() == Tile::FirstPlayer) {
                         // Insert into broken tiles
-                        gameBoard->getCurrentPlayer()->insertIntoBrokenTiles(Tile::FirstPlayer);
+                        currentPlayer->insertIntoBrokenTiles(Tile::FirstPlayer);
                         gameBoard->getCentreFactory().erase(gameBoard->getCentreFactory().begin());
                     }
                     for (int i = 0; i < (int) gameBoard->getCentreFactory().size(); i++) {
@@ -232,7 +236,7 @@ void MainMenu::currentPlayerTurn(GameBoard* gameBoard) {
                 chosenTiles.clear();
             }
         }   // Check first element for rule check
-        else if (gameBoard->getCurrentPlayer()->insertIntoStorage(storageRow, chosenTiles.front())) {
+        else if (currentPlayer->insertIntoStorage(storageRow, chosenTiles.front())) {
             // Removed from temporary vector
             chosenTiles.pop_back();
             // Adjust the factories to reflect the valid move
@@ -240,7 +244,7 @@ void MainMenu::currentPlayerTurn(GameBoard* gameBoard) {
                 // Check if first element is first player
                 if (gameBoard->getCentreFactory().front() == Tile::FirstPlayer) {
                     // Insert into broken tiles
-                    gameBoard->getCurrentPlayer()->insertIntoBrokenTiles(Tile::FirstPlayer);
+                    currentPlayer->insertIntoBrokenTiles(Tile::FirstPlayer);
                     gameBoard->getCentreFactory().erase(gameBoard->getCentreFactory().begin());
                 }
                 for (int i = 0; i < (int) gameBoard->getCentreFactory().size(); i++) {
@@ -275,7 +279,8 @@ void MainMenu::currentPlayerTurn(GameBoard* gameBoard) {
             cout << "Turn successful" << endl;
         }
         else {
-            cout << "Storage row has a different tile or mozaic already contains tile. Try Again" << endl;
+            cout << "Storage row has a different tile or mozaic already contains tile.";
+            cout << " Try Again" << endl;
             // Reset chosen tiles
             chosenTiles.clear();
             userTurnArray.clear();
@@ -285,12 +290,12 @@ void MainMenu::currentPlayerTurn(GameBoard* gameBoard) {
     // Add to players mozaic with storage row
     for (Tile::Colour tile: chosenTiles) {
         // If true tile will be added to the correct storage row
-        if (gameBoard->getCurrentPlayer()->insertIntoStorage(storageRow, tile)) {
+        if (currentPlayer->insertIntoStorage(storageRow, tile)) {
             // Removed from temporary vector
             chosenTiles.pop_back();
         } 
         else { // Otherwise add to broken tiles
-            gameBoard->getCurrentPlayer()->insertIntoBrokenTiles(tile);
+            currentPlayer->insertIntoBrokenTiles(tile);
             // Removed from temporary vector
             chosenTiles.pop_back();
         }
@@ -300,6 +305,8 @@ void MainMenu::currentPlayerTurn(GameBoard* gameBoard) {
 
     // Change current player
     gameBoard->switchCurrentPlayer();
+    // Set current player pointer to null
+    currentPlayer = nullptr;
 }
 
 string MainMenu::playerInput() {
@@ -311,7 +318,8 @@ string MainMenu::playerInput() {
     return userTurn;
 }
 
-bool MainMenu::userTurnErrorCheck(string userTurn, std::vector<string>& userTurnArray, GameBoard* gameBoard) {
+bool MainMenu::userTurnErrorCheck(string userTurn, 
+                                std::vector<string>& userTurnArray, GameBoard* gameBoard) {
     
     bool noErrors = true;
     
@@ -379,8 +387,8 @@ bool MainMenu::userTurnErrorCheck(string userTurn, std::vector<string>& userTurn
         string storageRow = userTurnArray.at(3);
         
         // Check conversion to an int
-        bool factoryIsAnInt = (factory.find_first_not_of("0123456789") == string::npos);
-        bool storageIsAnInt = (storageRow.find_first_not_of("0123456789") == string::npos);
+        bool factoryInt = (factory.find_first_not_of("0123456789") == string::npos);
+        bool storageInt = (storageRow.find_first_not_of("0123456789") == string::npos);
 
         // Check Tile::Colour match
         Tile::Colour colourArray[] = {Tile::Red, Tile::Yellow, Tile::DarkBlue, 
@@ -396,10 +404,10 @@ bool MainMenu::userTurnErrorCheck(string userTurn, std::vector<string>& userTurn
         if (command != "turn") {
             noErrors = false;
             userTurnArray.clear();
-            cout << "You must enter the 'turn' command" << endl;
+            cout << "You must enter the 'turn' or 'save' command" << endl;
             cin.clear();
         }
-        else if (factoryIsAnInt == true && storageIsAnInt == false) {
+        else if (factoryInt == true && storageInt == false) {
             if (storageRow != "b") {
                 noErrors = false;
                 userTurnArray.clear();
@@ -407,7 +415,7 @@ bool MainMenu::userTurnErrorCheck(string userTurn, std::vector<string>& userTurn
                 cin.clear();
             }
         }
-        else if (factoryIsAnInt == false || storageIsAnInt == false) {
+        else if (factoryInt == false || storageInt == false) {
             noErrors = false;
             userTurnArray.clear();
             cout << "You must enter an integer between 1 and 5" << endl;
@@ -422,7 +430,8 @@ bool MainMenu::userTurnErrorCheck(string userTurn, std::vector<string>& userTurn
         else { // Check if numbers are between 1 and 5
             int factoryAsInt = std::stoi(factory);
             int storageAsInt = std::stoi(storageRow);
-            if (!(factoryAsInt >= 0 && factoryAsInt <= 5) || !(storageAsInt >= 1 && storageAsInt <= 5)) {
+            if (!(factoryAsInt >= 0 && factoryAsInt <= 5) || 
+                !(storageAsInt >= 1 && storageAsInt <= 5)) {
                 noErrors = false;
                 userTurnArray.clear();
                 cout << "You must enter an integer between 0 and 5 for factories" << endl;
@@ -464,7 +473,8 @@ bool MainMenu::isEndOfRound(GameBoard* gameBoard) {
 
     // Check centre factory
     bool isCentreFactoryEmpty = true;
-    for (int i = 0; i < (int) gameBoard->getCentreFactory().size() && isCentreFactoryEmpty == true; i++) {
+    for (int i = 0; i < (int) gameBoard->getCentreFactory().size() 
+        && isCentreFactoryEmpty == true; i++) {
 
         Tile::Colour currentTile = gameBoard->getCentreFactory()[i];
         if (Tile::getTileColourAsString(currentTile) != '.') {
@@ -498,8 +508,9 @@ bool MainMenu::isEndOfRound(GameBoard* gameBoard) {
 }
 
 void MainMenu::printCurrentPlayerMozaic(GameBoard* gameBoard) {
+    Player* currentPlayer = gameBoard->getCurrentPlayer();
     // Print current player mozaic
-    cout << "Mozaic for " << gameBoard->getCurrentPlayer()->getPlayerName() << ":" << endl;
+    cout << "Mozaic for " << currentPlayer->getPlayerName() << ":" << endl;
     for (int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
         cout << row_num + 1 << ": ";
         // Prints the storage rows
@@ -507,14 +518,15 @@ void MainMenu::printCurrentPlayerMozaic(GameBoard* gameBoard) {
             cout << ' ';
         }
         for(int col_num = row_num; col_num >= 0; --col_num) {
-            cout << Tile::getTileColourAsString(*gameBoard->getCurrentPlayer()->getStorageTile(row_num, col_num));
+            Tile::Colour tile = *currentPlayer->getStorageTile(row_num, col_num);
+            cout << Tile::getTileColourAsString(tile);
         }
 
         // Prints the mosaic
         cout << "||";
         
         for(int col_num = 0; col_num < ARRAY_DIM; ++col_num) {
-            cout << *gameBoard->getCurrentPlayer()->getMosaicTile(row_num, col_num);
+            cout << *currentPlayer->getMosaicTile(row_num, col_num);
         }
         
         cout << std::endl;
@@ -522,9 +534,12 @@ void MainMenu::printCurrentPlayerMozaic(GameBoard* gameBoard) {
     
     // Print broken tiles
     cout << "broken: ";
-    for (int i = 0; i <= gameBoard->getCurrentPlayer()->getNumBrokenTiles() - 1; ++i) {
-        cout << Tile::getTileColourAsString(*gameBoard->getCurrentPlayer()->getBrokenTile(i));
+    for (int i = 0; i <= currentPlayer->getNumBrokenTiles() - 1; ++i) {
+        cout << Tile::getTileColourAsString(*currentPlayer->getBrokenTile(i));
     }
+
+    // Set current player pointer to null
+    currentPlayer = nullptr;
     cout << endl;
 }
 
@@ -562,7 +577,8 @@ void MainMenu::saveGame(string fileName, GameBoard* gameBoard) {
         for(int row_num = 0; row_num < DIM; ++row_num) {
             for(int col_num = 0; col_num < FACTORY_WIDTH; ++col_num) {
                 if(gameBoard->getFactoryTile(row_num, col_num) != Tile::NoTile) {
-                    saveFile << Tile::getTileColourAsString(gameBoard->getFactoryTile(row_num, col_num));
+                    Tile::Colour tile = gameBoard->getFactoryTile(row_num, col_num);
+                    saveFile << Tile::getTileColourAsString(tile);
                 } 
             }
             saveFile << '\n';
@@ -572,14 +588,16 @@ void MainMenu::saveGame(string fileName, GameBoard* gameBoard) {
         // storage
         for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
             for(int col_num = row_num; col_num >= 0; --col_num) {
-                saveFile << Tile::getTileColourAsString(*gameBoard->getPlayerOne()->getStorageTile(row_num, col_num));
+                Tile::Colour tile = *gameBoard->getPlayerOne()->getStorageTile(row_num,col_num);
+                saveFile << Tile::getTileColourAsString(tile);
             }
             saveFile << '\n';
         }
 
         // broken tiles
         for(int i = 0; i < gameBoard->getPlayerOne()->getNumBrokenTiles(); ++i) {
-            saveFile << Tile::getTileColourAsString(*gameBoard->getPlayerOne()->getBrokenTile(i));
+            Tile::Colour tile = *gameBoard->getPlayerOne()->getBrokenTile(i);
+            saveFile << Tile::getTileColourAsString(tile);
         }
         saveFile << '\n';
 
@@ -595,14 +613,16 @@ void MainMenu::saveGame(string fileName, GameBoard* gameBoard) {
         // storage
         for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
             for(int col_num = row_num; col_num >= 0; --col_num) {
-                saveFile << Tile::getTileColourAsString(*gameBoard->getPlayerTwo()->getStorageTile(row_num, col_num));
+                Tile::Colour tile = *gameBoard->getPlayerTwo()->getStorageTile(row_num,col_num);
+                saveFile << Tile::getTileColourAsString(tile);
             }
             saveFile << '\n';
         }
 
         // broken tiles
         for(int i = 0; i < gameBoard->getPlayerTwo()->getNumBrokenTiles(); ++i) {
-            saveFile << Tile::getTileColourAsString(*gameBoard->getPlayerTwo()->getBrokenTile(i));
+            Tile::Colour tile = *gameBoard->getPlayerTwo()->getBrokenTile(i);
+            saveFile << Tile::getTileColourAsString(tile);
         }
         saveFile << '\n';
 
@@ -638,6 +658,8 @@ void MainMenu::loadGame() {
         quit();
     }
     GameBoard* gameBoard;
+    Player* playerOne;
+    Player* playerTwo;
     try {
         string currentPlayerTurn;
         getline(fileload, currentPlayerTurn);
@@ -650,7 +672,7 @@ void MainMenu::loadGame() {
         getline(fileload, playerOnePoints);
         std::stoi(playerOnePoints);
 
-        Player* playerOne = new Player(playerOneName, std::stoi(playerOnePoints));
+        playerOne = new Player(playerOneName, std::stoi(playerOnePoints));
 
         // Get player two name and points to create new player 
         string playerTwoName;
@@ -659,7 +681,7 @@ void MainMenu::loadGame() {
         string playerTwoPoints;
         getline(fileload, playerTwoPoints);
         
-        Player* playerTwo = new Player(playerTwoName, std::stoi(playerTwoPoints));
+        playerTwo = new Player(playerTwoName, std::stoi(playerTwoPoints));
 
         
         std::vector<Tile::Colour> centreFactory;
@@ -740,6 +762,16 @@ void MainMenu::loadGame() {
         } else if(currentPlayerTurn == "false"){
             gameBoard->setCurrentPlayer(gameBoard->getPlayerTwo());
         }
+        // set gameboard box lid 
+        string boxLidStr;
+        getline(fileload, boxLidStr);
+
+        stringCounter = 0;
+        for(int row_num = 0; row_num < (int) boxLidStr.length(); ++row_num) {
+            int tileInt = (int) boxLidStr[stringCounter];
+            gameBoard->setBoxLidElement((Tile::Colour) tileInt);
+            ++stringCounter;
+        }
 
         // set gameboard tilebag
         string tileBagStr;
@@ -751,18 +783,6 @@ void MainMenu::loadGame() {
             gameBoard->setTileBagElement((Tile::Colour) tileInt);
             ++stringCounter; 
         }
-
-        // set gameboard box lid 
-        string boxLidStr;
-        getline(fileload, boxLidStr);
-
-        stringCounter = 0;
-        for(int row_num = 0; row_num < (int) boxLidStr.length(); ++row_num) {
-            int tileInt = (int) boxLidStr[stringCounter];
-            gameBoard->setBoxLidElement((Tile::Colour) tileInt);
-            ++stringCounter;
-        }
-        
     }
     catch(...) {
         std::cerr << "File load corrupted" << '\n';
@@ -771,23 +791,29 @@ void MainMenu::loadGame() {
     
     fileload.close();
 
-    while(gameBoard->getPlayerOne()->hasFullRow() == false || gameBoard->getPlayerTwo()->hasFullRow() == false) {
+    while(playerOne->hasFullRow() == false || playerTwo->hasFullRow() == false) {
         newRound(gameBoard);
     }
 
     cout << "=== Game End ===" << endl;
-    cout << "Player: " << gameBoard->getPlayerOne()->getPlayerName() <<
-    "  " << gameBoard->getPlayerOne()->getScore() << "\n\n";
-    cout << "Player: " << gameBoard->getPlayerTwo()->getPlayerName() <<
-    "  " << gameBoard->getPlayerTwo()->getScore() << "\n\n";
+    cout << "Player: " << playerOne->getPlayerName() <<
+    "  " << playerOne->getScore() << "\n\n";
+    cout << "Player: " << playerTwo->getPlayerName() <<
+    "  " << playerTwo->getScore() << "\n\n";
 
-    if(gameBoard->getPlayerOne()->getScore() > gameBoard->getPlayerTwo()->getScore()) {
-        cout << gameBoard->getPlayerOne()->getPlayerName() << " WINS!!!" << "\n\n";
-    } else if(gameBoard->getPlayerTwo()->getScore() > gameBoard->getPlayerOne()->getScore()) {
-        cout << gameBoard->getPlayerTwo()->getPlayerName() << " WINS!!!" << "\n\n";
-    } else {
+    if(playerOne->getScore() > playerTwo->getScore()) {
+        cout << playerOne->getPlayerName() << " WINS!!!" << "\n\n";
+    } 
+    else if(playerTwo->getScore() > playerTwo->getScore()) {
+        cout << playerTwo->getPlayerName() << " WINS!!!" << "\n\n";
+    } 
+    else {
         cout << "WE HAVE A DRAW!!!" << "\n\n";
     }
+
+    // set current pointers to null
+    playerOne = nullptr;
+    playerTwo = nullptr;
 
     // Delete GameBoard
     delete gameBoard;
