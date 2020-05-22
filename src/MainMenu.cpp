@@ -105,6 +105,7 @@ void MainMenu::newRound(GameBoard* gameBoard) {
     // Player 1 transfer full row into mosaic 
     Player* playerOne = gameBoard->getPlayerOne();
     playerOne->clearStorageRows(*gameBoard->getBoxLid());
+    
     // Player 2 transfer full row into mosaic 
     Player* playerTwo = gameBoard->getPlayerTwo();
     playerTwo->clearStorageRows(*gameBoard->getBoxLid());
@@ -770,6 +771,20 @@ void MainMenu::loadGame() {
 
     while(gameBoard->getPlayerOne()->hasFullRow() == false || gameBoard->getPlayerTwo()->hasFullRow() == false) {
         newRound(gameBoard);
+    }
+
+    cout << "=== Game End ===" << endl;
+    cout << "Player: " << gameBoard->getPlayerOne()->getPlayerName() <<
+    "  " << gameBoard->getPlayerOne()->getScore() << "\n\n";
+    cout << "Player: " << gameBoard->getPlayerTwo()->getPlayerName() <<
+    "  " << gameBoard->getPlayerTwo()->getScore() << "\n\n";
+
+    if(gameBoard->getPlayerOne()->getScore() > gameBoard->getPlayerTwo()->getScore()) {
+        cout << gameBoard->getPlayerOne()->getPlayerName() << " WINS!!!" << "\n\n";
+    } else if(gameBoard->getPlayerTwo()->getScore() > gameBoard->getPlayerOne()->getScore()) {
+        cout << gameBoard->getPlayerTwo()->getPlayerName() << " WINS!!!" << "\n\n";
+    } else {
+        cout << "WE HAVE A DRAW!!!" << "\n\n";
     }
 
     // Delete GameBoard
