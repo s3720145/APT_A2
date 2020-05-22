@@ -66,8 +66,8 @@ void MainMenu::newGame(int seed) {
     GameBoard* gameBoard = new GameBoard(playerOneName, playerTwoName, seed);
     Player* playerOne = gameBoard->getPlayerOne();
     Player* playerTwo = gameBoard->getPlayerTwo();
-    // Need to do end of game condition for every new round
-    // DO LOOP HERE AND END GAME CONDITION
+
+    // End of game condition for every new round
     while(playerOne->hasFullRow() == false && playerTwo->hasFullRow() == false) {
         newRound(gameBoard);
     }
@@ -78,6 +78,7 @@ void MainMenu::newGame(int seed) {
     cout << "Player: " << playerTwo->getPlayerName() <<
     "  " << playerTwo->getScore() << "\n\n";
 
+    // Find out the winner
     if(playerOne->getScore() > playerTwo->getScore()) {
         cout << gameBoard->getPlayerOne()->getPlayerName() << " WINS!!!" << "\n\n";
     } 
@@ -87,7 +88,6 @@ void MainMenu::newGame(int seed) {
         cout << "WE HAVE A DRAW!!!" << "\n\n";
     }
 
-    // Delete GameBoard
     delete gameBoard;
 }
 
@@ -108,9 +108,6 @@ void MainMenu::newRound(GameBoard* gameBoard) {
     // Player 2 transfer full row into mosaic 
     Player* playerTwo = gameBoard->getPlayerTwo();
     playerTwo->clearStorageRows(*gameBoard->getBoxLid());
-
-    // Calculate points
-    // TODO
 
     // Print player information
     playerOne->printPlayerBoard();
@@ -542,7 +539,6 @@ void MainMenu::printCurrentPlayerMozaic(GameBoard* gameBoard) {
     cout << endl;
 }
 
-// MAKE IMPROVEMENTS
 void MainMenu::saveGame(string fileName, GameBoard* gameBoard) {
     std::ofstream saveFile("src/saveFiles/" + fileName);
     

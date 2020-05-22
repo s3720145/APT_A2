@@ -14,16 +14,16 @@ Player::Player(string playerName, int score) {
 }
 
 Player::Player(const Player& other) {
-    // TODO
+
 }
 
 
 Player::Player(Player&& other) {
-    // TODO
+    
 }
 
 Player::~Player() {
-    // TODO
+    
     
 }
 

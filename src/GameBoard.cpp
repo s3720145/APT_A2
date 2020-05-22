@@ -50,7 +50,6 @@ void GameBoard::initialiseTileBag(int seed) {
 
     for (int i = 0; i < BAG_SIZE; i++) {
         // seed the engine
-        //std::default_random_engine engine(++seed);
         std::mt19937 engine(++seed);
         //establish the range of values that the enum can be
         std::uniform_int_distribution<int> range(0, 4);
