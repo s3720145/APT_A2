@@ -24,6 +24,7 @@ Player::Player(Player&& other) {
 
 Player::~Player() {
     // TODO
+    
 }
 
 void Player::initialiseStructures() {
@@ -222,27 +223,29 @@ void Player::insertIntoMosaic(const int row_num, const Tile::Colour tile) {
 
 bool Player::isInMosaicRow(const int row_num, Tile::Colour tile) {
     bool isInMosaic = false;
-    /**
+    
     for(int i = 0; i < ARRAY_DIM; ++i) {
-        int tileInt = (int) toupper(mosaic[row_num][i]);
-        Tile::Colour mosaicTile = (Tile::Colour) tileInt;
-        if(getTileColourAsString(mosaicTile) == getTileColourAsString(tile)) {
+        // int tileInt = (int) mosaic[row_num][i];
+        // Tile::Colour mosaicTile = (Tile::Colour) tileInt;
+        if(mosaic[row_num][i] == getTileColourAsString(tile)) {
+            std::cout << mosaic[row_num][i] << getTileColourAsString(tile) << std::endl;
             isInMosaic = true;
+            cout << (isInMosaic ? "true" : "false");
         }
     }
-    */
-    Tile::Colour colourArray[] = {Tile::Red, Tile::Yellow, Tile::DarkBlue, 
-        Tile::LightBlue, Tile::Black};
+    
+    // Tile::Colour colourArray[] = {Tile::Red, Tile::Yellow, Tile::DarkBlue, 
+    //     Tile::LightBlue, Tile::Black};
         
-    for(int i = 0; i < ARRAY_DIM; ++i) {
-        int tileInt = (int) mosaic[row_num][i];
-        // Check if it matches current enums
-        for (Tile::Colour tile: colourArray) {
-            if (tileInt == tile) {
-                isInMosaic = true;
-            }
-        }
-    }
+    // for(int i = 0; i < ARRAY_DIM; ++i) {
+    //     int tileInt = (int) mosaic[row_num][i];
+    //     // Check if it matches current enums
+    //     for (Tile::Colour tile: colourArray) {
+    //         if (tileInt == tile) {
+    //             isInMosaic = true;
+    //         }
+    //     }
+    // }
 
     return std::move(isInMosaic);
 }
@@ -260,23 +263,16 @@ bool Player::insertIntoStorage(int row_num, const Tile::Colour tile) {
          * is another tile with non-matching colours, break loop. Also breaks if there is a same
          * colour tile already inserted into the mosaic
          */
-        for(int col_num = 0; col_num < row_num && breakLoop == false; ++col_num) {
-            // IF the tile being inserted is already in the mosaic row, break loop
-            if (isInMosaicRow(row_num - 1, tile) == true) {
-                breakLoop = true;
+        if(isInMosaicRow(row_num - 1, tile) == false) {
+            for(int col_num = 0; col_num < row_num && breakLoop == false; ++col_num) {
+                if(getTileColourAsString(storage[row_num - 1][col_num]) == '.') {
+                    storage[row_num - 1][col_num] = std::move(tile);
+                    insertSuccess = true;
+                    breakLoop = true;
+                } else if(getTileColourAsString(tile) != getTileColourAsString(storage[row_num - 1][col_num])) {
+                    breakLoop = true;
+                }
             }
-            if(getTileColourAsString(storage[row_num - 1][col_num]) == '.') {
-                storage[row_num - 1][col_num] = std::move(tile);
-                insertSuccess = true;
-                breakLoop = true;
-            } else if(getTileColourAsString(tile) != getTileColourAsString(storage[row_num - 1][col_num])) {
-                breakLoop = true;
-            }
-
-            // // IF we cannot insert a tile because all rows are full, insert into broken tile array
-            // if(col_num == row_num - 1 && breakLoop == false) {
-            //     insertIntoBrokenTiles(tile);
-            // }
         }
     }
 

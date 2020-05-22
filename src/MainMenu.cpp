@@ -74,6 +74,20 @@ void MainMenu::newGame(int seed) {
         newRound(gameBoard);
     }
 
+    cout << "=== Game End ===" << endl;
+    cout << "Player: " << gameBoard->getPlayerOne()->getPlayerName() <<
+    "  " << gameBoard->getPlayerOne()->getScore() << "\n\n";
+    cout << "Player: " << gameBoard->getPlayerTwo()->getPlayerName() <<
+    "  " << gameBoard->getPlayerTwo()->getScore() << "\n\n";
+
+    if(gameBoard->getPlayerOne()->getScore() > gameBoard->getPlayerTwo()->getScore()) {
+        cout << gameBoard->getPlayerOne()->getPlayerName() << " WINS!!!" << "\n\n";
+    } else if(gameBoard->getPlayerTwo()->getScore() > gameBoard->getPlayerOne()->getScore()) {
+        cout << gameBoard->getPlayerTwo()->getPlayerName() << " WINS!!!" << "\n\n";
+    } else {
+        cout << "WE HAVE A DRAW!!!" << "\n\n";
+    }
+
     // Delete GameBoard
     delete gameBoard;
 }
