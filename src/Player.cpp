@@ -297,15 +297,17 @@ void Player::clearStorageRows(LinkedList& boxLid) {
         }
     }
 
-    // resets broken tile array
-    for(int i = 0; i < numBrokenTiles; ++i) {
-        boxLid.addBack(brokenTiles[i]);
-        brokenTiles[i] = Tile::NoTile;
-        numBrokenTiles = 0;
-    }
-
     roundScore -= getPointPenalty();
     totalScore += roundScore;
+
+    // reset broken tiles
+    for(int i = 0; i < numBrokenTiles; ++i) {
+        if(brokenTiles[i] != Tile::FirstPlayer) {
+            boxLid.addBack(brokenTiles[i]);
+        }
+        brokenTiles[i] = Tile::NoTile;
+    }
+    numBrokenTiles = 0;
 }
 
 // MUST OPTIMISE
